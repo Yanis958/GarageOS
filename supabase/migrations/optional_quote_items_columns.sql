@@ -1,0 +1,12 @@
+-- Migrations OPTIONNELLES : à appliquer manuellement dans Supabase (SQL Editor) si besoin.
+--
+-- 1) quote_items doit au minimum avoir : id, quote_id, description, quantity, unit_price, total, created_at.
+-- 2) Si la table quotes n'a pas notes_client (notes affichées sur le PDF) :
+--    ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS notes_client text;
+
+-- Exemple d'ajout de colonnes (décommenter si besoin) :
+-- Type de ligne pour le devis (Main-d'œuvre, Pièce, Forfait)
+-- ALTER TABLE public.quote_items ADD COLUMN IF NOT EXISTS type text DEFAULT 'part'; -- 'part' | 'labor' | 'forfait'
+-- ALTER TABLE public.quote_items ADD COLUMN IF NOT EXISTS discount_pct numeric DEFAULT 0;
+-- ALTER TABLE public.quote_items ADD COLUMN IF NOT EXISTS vat_rate numeric DEFAULT 20;
+-- ALTER TABLE public.quote_items ADD COLUMN IF NOT EXISTS sort_order int DEFAULT 0;

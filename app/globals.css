@@ -1,0 +1,189 @@
+/* ==========================================================================
+   GARAGEOS — Design System
+   Palette : Bleu = action / nav | Orange = attention | Vert = succès | Rouge = danger
+   Hiérarchie : primary (bleu) | secondary (gris) | destructive (rouge)
+   ========================================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Radius utilities pour utiliser les variables CSS */
+  .rounded-card {
+    border-radius: var(--radius-card);
+  }
+  
+  .rounded-input {
+    border-radius: var(--radius-input);
+  }
+  
+  .rounded-button {
+    border-radius: var(--radius-button);
+  }
+}
+
+@layer base {
+  :root {
+    /* ==========================================================================
+       GARAGEOS — DA Premium (Style Référence Dashboard)
+       Palette : Indigo/Violet premium / Vert / Orange / Rouge
+       ========================================================================== */
+
+    /* ---- Primary accent (indigo/violet premium) ---- */
+    /* #6D5DF6 - Couleur principale */
+    --primary: 252 90% 68%;
+    --primary-foreground: 0 0% 100%;
+    /* #8A7CFF - Primary-2 (violet soft) */
+    --primary-2: 252 100% 75%;
+    
+    /* Violet doux pour secondary/IA */
+    --secondary: 252 100% 75%;
+    --secondary-foreground: 252 90% 68%;
+
+    /* ---- Accents ---- */
+    /* #2ECC71 - Success (vert) */
+    --success: 145 63% 50%;
+    --success-foreground: 0 0% 100%;
+    
+    /* #F5A623 - Warning (orange) */
+    --warning: 38 91% 52%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* #FF4D4F - Destructive (rouge) */
+    --destructive: 359 100% 66%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* ---- Surfaces Light ---- */
+    /* #F4F6FB - Background (gris très clair) */
+    --background: 220 30% 96%;
+    /* #0B1020 - Foreground (gris très foncé) */
+    --foreground: 220 50% 8%;
+    
+    /* #FFFFFF - Card (blanc pur) */
+    --card: 0 0% 100%;
+    --card-foreground: 220 50% 8%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 50% 8%;
+    
+    /* #E6EAF2 - Border (gris très clair) */
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 252 90% 68%;
+
+    --muted: 220 15% 95%;
+    /* #6B7280 - Muted foreground (gris moyen) */
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 15% 95%;
+    --accent-foreground: 220 50% 8%;
+
+    /* ---- Couleurs métier (sémantiques) - Conservées pour compatibilité ---- */
+    --quote: 252 90% 68%;
+    --quote-foreground: 0 0% 100%;
+    --danger: 359 100% 66%;
+    --danger-foreground: 0 0% 100%;
+    --neutral: 220 9% 46%;
+    --neutral-foreground: 220 30% 96%;
+
+    /* ---- Charts ---- */
+    --chart-1: 252 90% 68%;
+    --chart-2: 145 63% 50%;
+    --chart-3: 38 91% 52%;
+    --chart-4: 359 100% 66%;
+    --chart-5: 252 100% 75%;
+
+    /* ---- Radius (coins arrondis premium) ---- */
+    --radius-card: 1.25rem;      /* 20px pour cards */
+    --radius-input: 0.875rem;    /* 14px pour inputs */
+    --radius-button: 0.75rem;    /* 12px pour buttons */
+    --radius: 0.75rem;           /* Default (pour compatibilité) */
+  }
+  
+  .dark {
+    /* ---- Primary accent (même couleur, plus lumineux en dark) ---- */
+    --primary: 252 90% 68%;
+    --primary-foreground: 0 0% 100%;
+    --primary-2: 252 100% 75%;
+    
+    --secondary: 252 100% 75%;
+    --secondary-foreground: 252 90% 68%;
+
+    /* ---- Accents (mêmes couleurs) ---- */
+    --success: 145 63% 50%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 91% 52%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 359 100% 66%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* ---- Surfaces Dark ---- */
+    /* #0B1020 - Background (noir bleuté/graphite) */
+    --background: 220 50% 8%;
+    /* #E9EEFF - Foreground (blanc cassé) */
+    --foreground: 220 100% 95%;
+    
+    /* #121A2F - Card (gris très foncé) */
+    --card: 220 40% 15%;
+    --card-foreground: 220 100% 95%;
+    
+    --popover: 220 40% 15%;
+    --popover-foreground: 220 100% 95%;
+    
+    /* #24304A - Border (gris foncé avec transparence) */
+    --border: 220 35% 25%;
+    --input: 220 35% 25%;
+    --ring: 252 90% 68%;
+
+    --muted: 220 35% 20%;
+    /* #A5B4FC - Muted foreground (lavande clair) */
+    --muted-foreground: 252 90% 80%;
+    --accent: 220 35% 20%;
+    --accent-foreground: 220 100% 95%;
+
+    /* ---- Couleurs métier dark ---- */
+    --quote: 252 90% 68%;
+    --quote-foreground: 0 0% 100%;
+    --danger: 359 100% 66%;
+    --danger-foreground: 0 0% 100%;
+    --neutral: 220 9% 60%;
+    --neutral-foreground: 220 100% 95%;
+
+    /* ---- Charts dark (plus saturés mais contrôlés) ---- */
+    --chart-1: 252 90% 68%;
+    --chart-2: 145 63% 50%;
+    --chart-3: 38 91% 52%;
+    --chart-4: 359 100% 66%;
+    --chart-5: 252 100% 75%;
+
+    /* ---- Radius (mêmes valeurs) ---- */
+    --radius-card: 1.25rem;
+    --radius-input: 0.875rem;
+    --radius-button: 0.75rem;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Variables CSS pour thème garage (scoped) */
+.garage-theme {
+  --garage-primary: var(--default-primary, #7C3AED);
+  --garage-accent: var(--default-accent, #22C55E);
+}
+
+/* Usage futur dans composants :
+   color: var(--garage-primary);
+   background-color: var(--garage-accent);
+*/
