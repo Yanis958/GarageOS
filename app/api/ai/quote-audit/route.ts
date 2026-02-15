@@ -51,16 +51,19 @@ function runAuditRules(
         (a.includes("plaquette") && b.includes("plaquette") && normalizeType(lines[i].type) === normalizeType(lines[j].type)) ||
         (a.includes("huile") && b.includes("huile") && normalizeType(lines[i].type) === normalizeType(lines[j].type));
       if (isDuplicate && lines[j].id) {
-        findings.push({
-          id: idGen(),
-          severity: "warn",
-          title: "Doublon détecté",
-          explanation: `« ${(lines[i].description ?? "").slice(0, 40)} » apparaît en double.`,
-          proposedFix: {
-            action: "REMOVE_LINE",
-            payload: { lineId: lines[j].id },
-          },
-        });
+        const lineId = lines[j].id;
+        if (lineId) {
+          findings.push({
+            id: idGen(),
+            severity: "warn",
+            title: "Doublon détecté",
+            explanation: `« ${(lines[i].description ?? "").slice(0, 40)} » apparaît en double.`,
+            proposedFix: {
+              action: "REMOVE_LINE",
+              payload: { lineId },
+            },
+          });
+        }
         break;
       }
     }

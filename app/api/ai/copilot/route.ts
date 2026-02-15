@@ -163,8 +163,8 @@ export async function POST(request: NextRequest) {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - COPILOT_QUOTES_DAYS);
     const cutoffIso = cutoff.toISOString();
-    const recentQuotes = (recentQuotesRaw as { created_at?: string }[]).filter((q) => (q.created_at ?? "") >= cutoffIso);
-    const todayTasks = (todayTasksRaw as { created_at?: string }[]).filter((t) => (t.created_at ?? "") >= cutoffIso);
+    const recentQuotes = recentQuotesRaw.filter((q) => (q.created_at ?? "") >= cutoffIso);
+    const todayTasks = todayTasksRaw.filter((t) => (t.created_at ?? "") >= cutoffIso);
 
     let clientSummary: string | null = null;
     const clientTerm = extractClientSearchTerm(message);
@@ -278,7 +278,9 @@ Réponse strictement en JSON : { "answer": "texte avec blocs SITUATION / ANALYSE
                   responseFormat: { type: "json_object" },
                   temperature: 0.2,
                 });
-                const content = response.choices[0]?.message?.content;
+                const raw = response.choices[0]?.message?.content;
+                if (!raw) continue;
+                const content = typeof raw === "string" ? raw : Array.isArray(raw) ? raw.map((c) => (typeof c === "string" ? c : (c as { text?: string }).text ?? "")).join("") : "";
                 if (!content) continue;
                 const parsed = JSON.parse(content);
                 const validated = CopilotResponseSchema.safeParse(parsed);

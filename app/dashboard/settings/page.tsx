@@ -29,10 +29,12 @@ export default async function SettingsPage() {
 
       <SettingsGarageForm garageWithSettings={garageWithSettings} />
 
-      <GarageAppearanceSettings
-        garageId={garageWithSettings.garage.id}
-        settings={garageWithSettings.settings}
-      />
+      {garageWithSettings && (
+        <GarageAppearanceSettings
+          garageId={garageWithSettings.garage.id}
+          settings={garageWithSettings.settings}
+        />
+      )}
 
       <Card className="border-border shadow-sm">
         <CardHeader>

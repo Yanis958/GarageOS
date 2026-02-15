@@ -441,7 +441,7 @@ export async function getTodayTasksWithPriority(limit = 5): Promise<TodayTaskIte
   }
   if (error || !quotes) return [];
 
-  const clientIds = [...new Set((quotes as { client_id?: string }[]).map((q) => q.client_id).filter(Boolean))] as string[];
+  const clientIds = Array.from(new Set((quotes as { client_id?: string }[]).map((q) => q.client_id).filter(Boolean))) as string[];
   let acceptedClientIds = new Set<string>();
   if (garageId && clientIds.length > 0) {
     const { data: accepted } = await supabase
@@ -457,7 +457,7 @@ export async function getTodayTasksWithPriority(limit = 5): Promise<TodayTaskIte
   const seenIds = new Set<string>();
 
   type QuoteRow = { id: string; client_id?: string; reference?: string | null; status: string; valid_until?: string | null; created_at: string; total_ttc?: number; clients?: { name: string | null } | null };
-  for (const q of quotes as QuoteRow[]) {
+  for (const q of quotes as unknown as QuoteRow[]) {
     if (seenIds.has(q.id)) continue;
     const created = new Date(q.created_at);
     const validUntil = q.valid_until ?? null;
@@ -479,7 +479,7 @@ export async function getTodayTasksWithPriority(limit = 5): Promise<TodayTaskIte
 
     tasks.push({
       id: q.id,
-      reference: q.reference,
+      reference: q.reference ?? null,
       status: q.status,
       valid_until: q.valid_until ?? null,
       created_at: q.created_at,
@@ -731,6 +731,7 @@ export async function createQuoteFromSuggestedLines(
   const err = await saveQuoteItemsAction(quote.id, items);
   if (err.error) return err;
   redirect(`/dashboard/devis/${quote.id}`);
+  return {};
 }
 
 export async function duplicateQuoteAction(quoteId: string): Promise<string | null> {

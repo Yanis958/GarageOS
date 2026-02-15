@@ -372,12 +372,13 @@ async function tryMistral(description: string): Promise<{ lines: any[] } | { err
           temperature: 0.3,
         });
 
-        const content = response.choices[0]?.message?.content;
-        if (!content) {
+        const raw = response.choices[0]?.message?.content;
+        if (!raw) {
           console.error(`[Mistral] Aucun contenu dans la réponse (modèle ${model})`);
           if (model !== models[models.length - 1]) continue;
           return { error: "Mistral n'a retourné aucun contenu" };
         }
+        const content = typeof raw === "string" ? raw : Array.isArray(raw) ? raw.map((c) => (typeof c === "string" ? c : (c as { text?: string }).text ?? "")).join("") : "";
 
         // Parser le JSON
         let parsed;
@@ -398,7 +399,7 @@ async function tryMistral(description: string): Promise<{ lines: any[] } | { err
         } else {
           console.error(`[Mistral] Validation échouée (modèle ${model}):`, validated.error);
           if (model !== models[models.length - 1]) continue;
-          return { error: `Format de réponse invalide: ${validated.error.message}` };
+          return { error: `Format de réponse invalide: ${validated.error?.message ?? "Validation échouée"}` };
         }
       } catch (modelError: any) {
         console.error(`[Mistral] Erreur avec modèle ${model}:`, modelError.message);
@@ -647,7 +648,7 @@ async function tryGemini(description: string): Promise<{ lines: any[] } | { erro
         if (model !== models[models.length - 1]) {
           continue;
         }
-        return { error: `Format de réponse invalide: ${validated.error.message}` };
+        return { error: `Format de réponse invalide: ${validated.error?.message ?? "Validation échouée"}` };
       }
     } catch (e: any) {
       // #region agent log
@@ -715,7 +716,7 @@ async function tryOpenAI(description: string): Promise<{ lines: any[] } | { erro
       return { lines: validated.data.lines };
     } else {
       console.error("[OpenAI] Validation échouée:", validated.error);
-      return { error: `Format de réponse invalide: ${validated.error.message}` };
+      return { error: `Format de réponse invalide: ${validated.error?.message ?? "Validation échouée"}` };
     }
   } catch (e: any) {
     console.error("[OpenAI] Exception:", e.message || e);

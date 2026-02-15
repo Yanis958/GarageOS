@@ -99,7 +99,7 @@ function hexToRgb(hex: string | null | undefined): RGB {
  * Formule WCAG: L = 0.2126 * R + 0.7152 * G + 0.0722 * B
  */
 function getLuminance(color: RGB): number {
-  const [r, g, b] = [color.r, color.g, color.b];
+  const [r, g, b] = [color.red, color.green, color.blue];
   // Convertir en valeurs linéaires (gamma correction)
   const toLinear = (c: number) => {
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -125,12 +125,12 @@ function getContrastRatio(color1: RGB, color2: RGB): number {
  */
 function ensureContrast(foreground: RGB, background: RGB, minRatio = 4.5): RGB {
   // Valider les couleurs d'entrée
-  if (isNaN(foreground.r) || isNaN(foreground.g) || isNaN(foreground.b)) {
+  if (isNaN(foreground.red) || isNaN(foreground.green) || isNaN(foreground.blue)) {
     console.warn("ensureContrast: foreground invalide, retour de la couleur par défaut");
     return rgb(0.1, 0.1, 0.1); // Noir pour texte
   }
   
-  if (isNaN(background.r) || isNaN(background.g) || isNaN(background.b)) {
+  if (isNaN(background.red) || isNaN(background.green) || isNaN(background.blue)) {
     console.warn("ensureContrast: background invalide, retour de foreground");
     return foreground;
   }
@@ -168,9 +168,9 @@ function ensureContrast(foreground: RGB, background: RGB, minRatio = 4.5): RGB {
     }
   };
 
-  const r = adjust(foreground.r);
-  const g = adjust(foreground.g);
-  const b = adjust(foreground.b);
+  const r = adjust(foreground.red);
+  const g = adjust(foreground.green);
+  const b = adjust(foreground.blue);
 
   // Vérifier que les valeurs ajustées ne sont pas NaN
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
@@ -186,14 +186,14 @@ function ensureContrast(foreground: RGB, background: RGB, minRatio = 4.5): RGB {
  */
 function lighten(color: RGB, amount: number): RGB {
   // Valider que color est valide
-  if (isNaN(color.r) || isNaN(color.g) || isNaN(color.b)) {
+  if (isNaN(color.red) || isNaN(color.green) || isNaN(color.blue)) {
     console.warn("lighten: couleur invalide, utilisation de la couleur par défaut");
     return rgb(0.49, 0.23, 0.93); // #7C3AED par défaut
   }
   
-  const r = Math.min(1, Math.max(0, color.r + amount));
-  const g = Math.min(1, Math.max(0, color.g + amount));
-  const b = Math.min(1, Math.max(0, color.b + amount));
+  const r = Math.min(1, Math.max(0, color.red + amount));
+  const g = Math.min(1, Math.max(0, color.green + amount));
+  const b = Math.min(1, Math.max(0, color.blue + amount));
   
   // Vérifier que les valeurs ne sont pas NaN
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
@@ -206,14 +206,14 @@ function lighten(color: RGB, amount: number): RGB {
 
 function darken(color: RGB, amount: number): RGB {
   // Valider que color est valide
-  if (isNaN(color.r) || isNaN(color.g) || isNaN(color.b)) {
+  if (isNaN(color.red) || isNaN(color.green) || isNaN(color.blue)) {
     console.warn("darken: couleur invalide, utilisation de la couleur par défaut");
     return rgb(0.49, 0.23, 0.93); // #7C3AED par défaut
   }
   
-  const r = Math.max(0, Math.min(1, color.r - amount));
-  const g = Math.max(0, Math.min(1, color.g - amount));
-  const b = Math.max(0, Math.min(1, color.b - amount));
+  const r = Math.max(0, Math.min(1, color.red - amount));
+  const g = Math.max(0, Math.min(1, color.green - amount));
+  const b = Math.max(0, Math.min(1, color.blue - amount));
   
   // Vérifier que les valeurs ne sont pas NaN
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
@@ -264,8 +264,8 @@ export function getGarageTheme(garage: {
   try {
     primary = hexToRgb(primaryHex);
     // Vérifier que primary est valide (pas NaN)
-    if (isNaN(primary.r) || isNaN(primary.g) || isNaN(primary.b)) {
-      throw new Error(`RGB invalide pour primary: r=${primary.r}, g=${primary.g}, b=${primary.b}`);
+    if (isNaN(primary.red) || isNaN(primary.green) || isNaN(primary.blue)) {
+      throw new Error(`RGB invalide pour primary: r=${primary.red}, g=${primary.green}, b=${primary.blue}`);
     }
   } catch (error) {
     console.error("Erreur lors de la conversion de theme_primary:", error, "Valeur:", primaryHex);
@@ -275,8 +275,8 @@ export function getGarageTheme(garage: {
   try {
     accent = hexToRgb(accentHex);
     // Vérifier que accent est valide (pas NaN)
-    if (isNaN(accent.r) || isNaN(accent.g) || isNaN(accent.b)) {
-      throw new Error(`RGB invalide pour accent: r=${accent.r}, g=${accent.g}, b=${accent.b}`);
+    if (isNaN(accent.red) || isNaN(accent.green) || isNaN(accent.blue)) {
+      throw new Error(`RGB invalide pour accent: r=${accent.red}, g=${accent.green}, b=${accent.blue}`);
     }
   } catch (error) {
     console.error("Erreur lors de la conversion de theme_accent:", error, "Valeur:", accentHex);

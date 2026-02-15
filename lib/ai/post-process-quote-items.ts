@@ -813,8 +813,8 @@ function calculateSimilarity(desc1: string, desc2: string): number {
   const words1 = new Set(norm1.split(/\s+/));
   const words2 = new Set(norm2.split(/\s+/));
   
-  const intersection = new Set([...words1].filter(w => words2.has(w)));
-  const union = new Set([...words1, ...words2]);
+  const intersection = new Set(Array.from(words1).filter((w) => words2.has(w)));
+  const union = new Set(Array.from(words1).concat(Array.from(words2)));
   
   if (union.size === 0) return 0;
   

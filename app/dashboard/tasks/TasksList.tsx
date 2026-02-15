@@ -12,6 +12,7 @@ import {
   createGarageTask,
   toggleGarageTaskDone,
   deleteGarageTask,
+  getGarageTasks,
   type GarageTaskRow,
 } from "@/lib/actions/garage-tasks";
 import { cn } from "@/lib/utils";

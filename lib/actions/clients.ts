@@ -195,6 +195,8 @@ export async function createClientAction(_prev: unknown, formData: FormData) {
     }
   }
 
+  if (!garageId) return { error: "Aucun garage associé. Impossible de créer le client." };
+
   const name = formData.get("name") as string;
   if (!name?.trim()) return { error: "Le nom est obligatoire." };
 

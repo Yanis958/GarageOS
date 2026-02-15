@@ -95,11 +95,12 @@ export default async function CreditNotesPage({
         </div>
       </div>
 
-      <DataTable
+      <DataTable<(typeof creditNotes)[number]>
+        title="Avoirs"
         data={creditNotes}
         columns={columns}
         searchPlaceholder="Rechercher un avoir..."
-        emptyMessage="Aucun avoir trouvé."
+        emptyState={{ title: "Aucun avoir trouvé." }}
       />
     </div>
   );

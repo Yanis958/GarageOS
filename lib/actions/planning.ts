@@ -65,7 +65,8 @@ export async function getAcceptedQuotesWithDuration(): Promise<AcceptedQuoteWith
     }
   }
 
-  return quotes.map((q: { id: string; reference: string | null; total_ttc?: number; clients?: { name: string | null } | null }) => {
+  type QuoteRow = { id: string; reference: string | null; total_ttc?: number; clients?: { name: string | null } | null };
+  return (quotes as unknown as QuoteRow[]).map((q) => {
     const name = q.clients && typeof q.clients === "object" && "name" in q.clients ? (q.clients as { name: string | null }).name : null;
     return {
       id: q.id,
@@ -100,7 +101,7 @@ export async function getPlanningAssignments(weekStart: string): Promise<Plannin
   const list = (rows ?? []) as PlanningAssignmentRow[];
   if (list.length === 0) return list;
 
-  const quoteIds = [...new Set(list.map((r) => r.quote_id))];
+  const quoteIds = Array.from(new Set(list.map((r) => r.quote_id)));
   const { data: quotes } = await supabase
     .from("quotes")
     .select("id, reference")
@@ -203,7 +204,8 @@ export async function getQuotesWithPlannedAtForWeek(weekStart: string): Promise<
   const { data: rows, error } = await query;
   if (error) return [];
 
-  return (rows ?? []).map((q: { id: string; reference: string | null; planned_at: string; clients?: { name: string | null } | null }) => ({
+  type PlannedRow = { id: string; reference: string | null; planned_at: string; clients?: { name: string | null } | null };
+  return ((rows ?? []) as unknown as PlannedRow[]).map((q) => ({
     id: q.id,
     reference: q.reference ?? null,
     planned_at: q.planned_at,

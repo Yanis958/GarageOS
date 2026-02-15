@@ -67,7 +67,7 @@ function getValue(point: QuoteActivityPoint, key: (typeof STATUS_KEYS)[number], 
     return total > 0 ? (point[key] / total) * 100 : 0;
   }
   const ttcKey = `${key}_ttc` as keyof QuoteActivityPoint;
-  return Number((point as Record<string, number>)[ttcKey]) || 0;
+  return Number((point as unknown as Record<string, number>)[ttcKey]) || 0;
 }
 
 function getTotalForPoint(point: QuoteActivityPoint, mode: ChartMode): number {
@@ -98,6 +98,8 @@ type CustomTooltipProps = TooltipProps<number, string> & {
   data: QuoteActivityPoint[];
   setActiveIndex: (i: number) => void;
   mode: ChartMode;
+  payload?: Array<{ payload: QuoteActivityPoint }>;
+  label?: string;
 };
 
 function CustomTooltip({ active, payload, label, data, setActiveIndex, mode }: CustomTooltipProps) {

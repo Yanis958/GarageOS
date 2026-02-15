@@ -60,6 +60,7 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
 
   async function handleSaveIdentity(e: React.FormEvent) {
     e.preventDefault();
+    if (!garage) return;
     setSaving(true);
     const err1 = await updateGarageAction(garage.id, { name: name.trim() || null, address: address.trim() || null });
     const err2 = await updateGarageSettingsAction(garage.id, {
@@ -79,6 +80,7 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
 
   async function handleSaveBilling(e: React.FormEvent) {
     e.preventDefault();
+    if (!garage) return;
     setSaving(true);
     const err = await updateGarageSettingsAction(garage.id, {
       hourly_rate: parseFloat(hourlyRate) || 60,
@@ -96,6 +98,7 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
 
   async function handleSaveDocuments(e: React.FormEvent) {
     e.preventDefault();
+    if (!garage) return;
     setSaving(true);
     const err = await updateGarageSettingsAction(garage.id, {
       pdf_footer: pdfFooter.trim() || null,
@@ -372,6 +375,7 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
           <form
             onSubmit={async (e) => {
               e.preventDefault();
+              if (!garage) return;
               setSaving(true);
               const err = await updateGarageSettingsAction(garage.id, { reminders_enabled: remindersEnabled });
               setSaving(false);

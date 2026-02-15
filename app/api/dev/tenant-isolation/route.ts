@@ -25,7 +25,7 @@ export async function GET() {
   }
 
   const supabase = createClient(url, serviceKey);
-  const result: Record<string, Record<string, number>> = {};
+  const result: Record<string, Record<string, number> | { _error: string }> = {};
 
   for (const table of TABLES) {
     const { data, error } = await supabase.from(table).select("garage_id");

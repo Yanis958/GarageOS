@@ -49,12 +49,12 @@ export type PremiumThemeTokens = ThemeTokens & {
 function withAlpha(color: ReturnType<typeof rgb>, alpha: number): ReturnType<typeof rgb> {
   // Valider que la couleur d'entrée est valide (pas NaN)
   if (
-    isNaN(color.r) ||
-    isNaN(color.g) ||
-    isNaN(color.b) ||
-    !isFinite(color.r) ||
-    !isFinite(color.g) ||
-    !isFinite(color.b)
+    isNaN(color.red) ||
+    isNaN(color.green) ||
+    isNaN(color.blue) ||
+    !isFinite(color.red) ||
+    !isFinite(color.green) ||
+    !isFinite(color.blue)
   ) {
     console.warn("withAlpha: couleur invalide (NaN ou infini), utilisation de la couleur par défaut");
     // Retourner une couleur par défaut (gris très clair)
@@ -69,9 +69,9 @@ function withAlpha(color: ReturnType<typeof rgb>, alpha: number): ReturnType<typ
   
   // Mélanger avec blanc pour simuler l'opacité
   const white = rgb(1, 1, 1);
-  const r = color.r * alpha + white.r * (1 - alpha);
-  const g = color.g * alpha + white.g * (1 - alpha);
-  const b = color.b * alpha + white.b * (1 - alpha);
+  const r = color.red * alpha + white.red * (1 - alpha);
+  const g = color.green * alpha + white.green * (1 - alpha);
+  const b = color.blue * alpha + white.blue * (1 - alpha);
   
   // Vérifier que les résultats ne sont pas NaN
   if (isNaN(r) || isNaN(g) || isNaN(b) || !isFinite(r) || !isFinite(g) || !isFinite(b)) {
@@ -87,18 +87,18 @@ function withAlpha(color: ReturnType<typeof rgb>, alpha: number): ReturnType<typ
  */
 function isValidRgb(color: ReturnType<typeof rgb>): boolean {
   return (
-    !isNaN(color.r) &&
-    !isNaN(color.g) &&
-    !isNaN(color.b) &&
-    isFinite(color.r) &&
-    isFinite(color.g) &&
-    isFinite(color.b) &&
-    color.r >= 0 &&
-    color.r <= 1 &&
-    color.g >= 0 &&
-    color.g <= 1 &&
-    color.b >= 0 &&
-    color.b <= 1
+    !isNaN(color.red) &&
+    !isNaN(color.green) &&
+    !isNaN(color.blue) &&
+    isFinite(color.red) &&
+    isFinite(color.green) &&
+    isFinite(color.blue) &&
+    color.red >= 0 &&
+    color.red <= 1 &&
+    color.green >= 0 &&
+    color.green <= 1 &&
+    color.blue >= 0 &&
+    color.blue <= 1
   );
 }
 
@@ -1482,5 +1482,3 @@ export {
   SPACING_LG,
   SPACING_XL,
 };
-
-export type { PremiumThemeTokens };

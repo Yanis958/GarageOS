@@ -128,7 +128,7 @@ export function DataTable<T extends { id: string }>({
                   const href = rowHref?.(row);
                   // Appeler col.render(row) dans le Server Component pour obtenir des ReactNode
                   const renderedCells = columns.map((col) => col.render(row));
-                  const columnClassNames = columns.map((col) => col.className);
+                  const columnClassNames = columns.map((col) => col.className ?? "");
                   const actions = rowActions?.(row);
 
                   return (

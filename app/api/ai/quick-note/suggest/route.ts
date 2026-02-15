@@ -111,7 +111,9 @@ export async function POST(request: NextRequest) {
                   responseFormat: { type: "json_object" },
                   temperature: 0.2,
                 });
-                const content = response.choices[0]?.message?.content;
+                const raw = response.choices[0]?.message?.content;
+                if (!raw) continue;
+                const content = typeof raw === "string" ? raw : Array.isArray(raw) ? raw.map((c) => (typeof c === "string" ? c : (c as { text?: string }).text ?? "")).join("") : "";
                 if (!content) continue;
                 const parsed = JSON.parse(content);
                 const validated = QuickNoteSuggestResponseSchema.safeParse(parsed);
@@ -166,9 +168,10 @@ export async function POST(request: NextRequest) {
                 temperature: 0.2,
                 response_format: { type: "json_object" },
               });
-              const content = completion.choices[0]?.message?.content;
-              if (content) {
-                const parsed = JSON.parse(content);
+              const rawContent = completion.choices[0]?.message?.content as string | { text?: string }[] | undefined;
+              const contentStr = typeof rawContent === "string" ? rawContent : Array.isArray(rawContent) ? rawContent.map((c) => (typeof c === "string" ? c : (c as { text?: string }).text ?? "")).join("") : "";
+              if (contentStr) {
+                const parsed = JSON.parse(contentStr);
                 const validated = QuickNoteSuggestResponseSchema.safeParse(parsed);
                 if (validated.success) result = validated.data as QuickNoteSuggestResponse;
               }

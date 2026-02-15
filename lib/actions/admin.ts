@@ -156,7 +156,7 @@ export async function getAiUsageForAdmin(monthsBack = 12): Promise<AiUsageRow[]>
     .in("period", periods)
     .order("period", { ascending: false });
   if (!usage?.length) return [];
-  const garageIds = [...new Set(usage.map((r: { garage_id: string }) => r.garage_id))];
+  const garageIds = Array.from(new Set(usage.map((r: { garage_id: string }) => r.garage_id)));
   const { data: garages } = await supabase
     .from("garages")
     .select("id, name")

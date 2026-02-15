@@ -44,7 +44,7 @@ export function NavLink({ href, icon, children }: NavLinkProps) {
   const pathMatch = pathname === pathOnly || (pathOnly !== "/dashboard" && pathname.startsWith(pathOnly));
   const queryMatch = !queryString || (() => {
     const params = new URLSearchParams(queryString);
-    for (const [k, v] of params) {
+    for (const [k, v] of Array.from(params.entries())) {
       if (searchParams.get(k) !== v) return false;
     }
     return true;

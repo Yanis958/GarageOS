@@ -68,7 +68,7 @@ async function getRelances(garageId: string): Promise<ActionItem[]> {
   const expired: Row[] = [];
   const toRelance: Row[] = [];
   const toFinalize: Row[] = [];
-  for (const r of quotes as Row[]) {
+  for (const r of quotes as unknown as Row[]) {
     const created = new Date(r.created_at);
     const validUntil = r.valid_until ?? null;
     if (r.status === "sent") {
@@ -153,7 +153,7 @@ async function getInterventionsAOrganiser(garageId: string): Promise<ActionItem[
     .limit(15);
   const { data: acceptedNoDate } = await q;
   for (const row of acceptedNoDate ?? []) {
-    const r = row as { id: string; reference: string | null; total_ttc?: number; clients?: { name: string | null } | null; vehicles?: { brand?: string | null; model?: string | null; registration?: string | null } | null };
+    const r = row as unknown as { id: string; reference: string | null; total_ttc?: number; clients?: { name: string | null } | null; vehicles?: { brand?: string | null; model?: string | null; registration?: string | null } | null };
     const name = r.clients?.name ?? null;
     const v = r.vehicles;
     const vehicleLabel = v ? [v.brand, v.model].filter(Boolean).join(" ") || (v as { registration?: string | null }).registration || null : null;
@@ -174,7 +174,7 @@ async function getInterventionsAOrganiser(garageId: string): Promise<ActionItem[
   }
 
   // 2) RDV dépassés (planned_at < today, pas de facture)
-  q = supabase
+  const qOverdue = supabase
     .from("quotes")
     .select("id, reference, planned_at, total_ttc, facture_number, clients(name), vehicles(brand, model, registration)")
     .eq("garage_id", garageId)
@@ -182,9 +182,9 @@ async function getInterventionsAOrganiser(garageId: string): Promise<ActionItem[
     .is("archived_at", null)
     .not("planned_at", "is", null)
     .lt("planned_at", today);
-  const { data: overdue } = await q;
+  const { data: overdue } = await qOverdue;
   for (const row of overdue ?? []) {
-    const r = row as { id: string; reference: string | null; planned_at: string | null; total_ttc?: number; facture_number?: string | null; clients?: { name: string | null } | null; vehicles?: { brand?: string | null; model?: string | null; registration?: string | null } | null };
+    const r = row as unknown as { id: string; reference: string | null; planned_at: string | null; total_ttc?: number; facture_number?: string | null; clients?: { name: string | null } | null; vehicles?: { brand?: string | null; model?: string | null; registration?: string | null } | null };
     const hasFacture = !!r.facture_number?.trim();
     if (hasFacture) continue;
     const name = r.clients?.name ?? null;
@@ -223,7 +223,7 @@ async function getFacturesAEncaisser(garageId: string): Promise<ActionItem[]> {
   const items: ActionItem[] = [];
   const unpaidStatuses = ["unpaid", "partial", null];
   for (const row of rows ?? []) {
-    const r = row as { id: string; reference: string | null; total_ttc?: number; facture_number?: string | null; payment_status?: string | null; created_at?: string; clients?: { name: string | null } | null };
+    const r = row as unknown as { id: string; reference: string | null; total_ttc?: number; facture_number?: string | null; payment_status?: string | null; created_at?: string; clients?: { name: string | null } | null };
     const status = r.payment_status ?? null;
     if (status === "paid") continue;
     const name = r.clients?.name ?? null;

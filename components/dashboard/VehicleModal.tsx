@@ -110,11 +110,9 @@ export function VehicleModal({
         
         // Appeler onSuccess si fourni (il gérera le refresh)
         if (onSuccess) {
-          if (state.vehicleId) {
-            // Appeler avec un petit délai pour laisser le modal se fermer
-            setTimeout(() => {
-              onSuccess(state.vehicleId);
-            }, 100);
+          const id = state.vehicleId;
+          if (id) {
+            setTimeout(() => onSuccess(id), 100);
           }
         }
       }

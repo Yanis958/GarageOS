@@ -1,8 +1,12 @@
 import type { PdfDevisPayload } from "./types";
+import type { ThemeTokens } from "@/lib/theme/tokens";
+import { PDFDocument, PDFPage, PDFFont } from "pdf-lib";
 import { renderInvoicePdfV2 } from "./premium-v2";
+import { cleanTextForWinAnsi, wrapText } from "./premium-template";
 
-// Note: PAGE_WIDTH, PAGE_HEIGHT, MARGIN_X, MARGIN_Y, CONTENT_WIDTH, FONT_SIZE_SMALL, LINE_HEIGHT_NORMAL, SPACING_MD
-// sont maintenant importés depuis premium-template.ts
+const PAGE_WIDTH = 595;
+const PAGE_HEIGHT = 842;
+const MARGIN_X = 36;
 // Les constantes ci-dessous sont conservées pour compatibilité avec les anciennes fonctions
 // qui ne sont plus utilisées mais pourraient être référencées ailleurs
 const MARGIN_SMALL = 8;
@@ -11,6 +15,8 @@ const MARGIN_SMALL = 8;
 const FONT_SIZE_H1 = 20;
 const FONT_SIZE_H2 = 12;
 const FONT_SIZE_NORMAL = 10;
+const FONT_SIZE_SMALL = 9;
+const LINE_HEIGHT_NORMAL = 14;
 const ROW_HEIGHT = 18;
 
 const LOGO_MAX_WIDTH = 120;
@@ -271,7 +277,7 @@ function drawClientVehicleBlock(
     font,
     color: tokens.text,
   });
-  infoY -= LINE_HEIGHT + 4;
+  infoY -= LINE_HEIGHT_NORMAL + 4;
   
   if (data.createdAt) {
     page.drawText("Date de creation", {
@@ -357,7 +363,7 @@ function drawClientVehicleBlock(
     font,
     color: tokens.text,
   });
-  clientY -= LINE_HEIGHT + 2;
+  clientY -= LINE_HEIGHT_NORMAL + 2;
   
   // Adresse client
   const addressParts = [
@@ -417,7 +423,7 @@ function drawClientVehicleBlock(
     font,
     color: tokens.text,
   });
-  clientY -= LINE_HEIGHT + 2;
+  clientY -= LINE_HEIGHT_NORMAL + 2;
   
   // Immatriculation
   if (data.vehicle.registration) {

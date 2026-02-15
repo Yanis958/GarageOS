@@ -144,7 +144,7 @@ export default async function ClientDetailPage({
 
       <ClientMessageBlock
         client={{ name: client.name, email: client.email, phone: client.phone }}
-        lastQuote={lastQuote ? { reference: lastQuote.reference, total_ttc: lastQuote.total_ttc, valid_until: lastQuote.valid_until, vehicles: lastQuote.vehicles } : null}
+        lastQuote={lastQuote ? { reference: lastQuote.reference, total_ttc: lastQuote.total_ttc, valid_until: lastQuote.valid_until, vehicles: Array.isArray(lastQuote.vehicles) ? lastQuote.vehicles[0] ?? null : lastQuote.vehicles } : null}
       />
 
       <Card className="border-l-4 border-l-primary border-border shadow-sm">

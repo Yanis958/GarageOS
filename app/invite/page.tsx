@@ -56,7 +56,7 @@ function InvitePageContent() {
     let cancelled = false;
     async function validateInvite() {
       try {
-        const response = await fetch(`/api/invites/validate?token=${encodeURIComponent(currentToken)}`);
+        const response = await fetch(`/api/invites/validate?token=${encodeURIComponent(currentToken ?? "")}`);
         const data = await response.json();
         if (cancelled) return;
 
