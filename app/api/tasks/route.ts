@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getCurrentGarageId } from "@/lib/actions/garage";
 import { getTodayTasksWithPriority } from "@/lib/actions/quotes";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const garageId = await getCurrentGarageId();
@@ -11,8 +13,10 @@ export async function GET() {
     const limit = 5;
     const tasks = await getTodayTasksWithPriority(limit);
     return NextResponse.json({ tasks });
-  } catch (e) {
-    console.error("[api/tasks] Error:", e);
+  } catch (e: unknown) {
+    if ((e as { digest?: string })?.digest !== "DYNAMIC_SERVER_USAGE") {
+      console.error("[api/tasks] Error:", e);
+    }
     return NextResponse.json(
       { error: "Erreur lors de la récupération des tâches" },
       { status: 500 }

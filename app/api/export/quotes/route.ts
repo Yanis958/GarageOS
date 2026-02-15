@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { exportQuotesCsv, type QuoteListFilters } from "@/lib/actions/quotes";
 import { toCsv } from "@/lib/csv";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -119,8 +121,10 @@ export async function GET(request: NextRequest) {
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
-  } catch (error: any) {
-    console.error("Erreur export CSV devis:", error);
-    return NextResponse.json({ error: error.message || "Erreur lors de l'export CSV" }, { status: 500 });
+  } catch (error: unknown) {
+    if ((error as { digest?: string })?.digest !== "DYNAMIC_SERVER_USAGE") {
+      console.error("Erreur export CSV devis:", error);
+    }
+    return NextResponse.json({ error: (error as Error)?.message || "Erreur lors de l'export CSV" }, { status: 500 });
   }
 }
