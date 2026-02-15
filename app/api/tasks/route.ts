@@ -14,7 +14,11 @@ export async function GET() {
     const tasks = await getTodayTasksWithPriority(limit);
     return NextResponse.json({ tasks });
   } catch (e: unknown) {
-    if ((e as { digest?: string })?.digest !== "DYNAMIC_SERVER_USAGE") {
+    const err = e as { digest?: string; message?: string };
+    const isDynamicUsage =
+      err?.digest === "DYNAMIC_SERVER_USAGE" ||
+      (typeof err?.message === "string" && err.message.includes("couldn't be rendered statically"));
+    if (!isDynamicUsage) {
       console.error("[api/tasks] Error:", e);
     }
     return NextResponse.json(

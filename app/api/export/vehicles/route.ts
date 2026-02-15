@@ -41,7 +41,11 @@ export async function GET() {
       },
     });
   } catch (error: unknown) {
-    if ((error as { digest?: string })?.digest !== "DYNAMIC_SERVER_USAGE") {
+    const err = error as { digest?: string; message?: string };
+    const isDynamicUsage =
+      err?.digest === "DYNAMIC_SERVER_USAGE" ||
+      (typeof err?.message === "string" && err.message.includes("couldn't be rendered statically"));
+    if (!isDynamicUsage) {
       console.error("Erreur export CSV véhicules:", error);
     }
     return NextResponse.json({ error: (error as Error)?.message || "Erreur lors de l'export CSV" }, { status: 500 });
