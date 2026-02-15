@@ -31,7 +31,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-1. Pousse le projet sur GitHub (dépôt connecté à Vercel).
+1. Pousse le projet sur GitHub (dépôt connecté à Vercel). **Important :** sur Vercel, ne clique pas sur « Redeploy » d’un ancien déploiement en erreur — ça reconstruit le même commit. Chaque nouveau push sur `main` crée un nouveau déploiement avec le dernier code.
 2. Sur [Vercel](https://vercel.com/new), importe le dépôt ; le framework Next.js est détecté automatiquement.
 3. **Variables d’environnement** : dans les paramètres du projet Vercel, ajoute les variables listées dans `.env.example` :
    - **Obligatoires** : `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
