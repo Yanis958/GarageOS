@@ -58,7 +58,7 @@ export function NavLink({ href, icon, children }: NavLinkProps) {
       className={cn(
         "flex items-center gap-3 rounded-button px-3 py-2.5 text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-primary/10 text-primary font-semibold shadow-sm"
+          ? "bg-primary/10 text-[#2563eb] font-semibold shadow-sm"
           : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
       )}
     >

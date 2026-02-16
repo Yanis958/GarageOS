@@ -115,10 +115,10 @@ export function DevisEditForm({
   const [reference, setReference] = useState(quote.reference ?? "");
   const [notes, setNotes] = useState(quote.notes ?? "");
   const [notesClient, setNotesClient] = useState(quote.notes_client ?? "");
-  const [lines, setLines] = useState<DevisLine[]>(() => {
-    const items = (quote as unknown as { items?: Item[] }).items;
-    return items?.length
-      ? items.map((it, i) => ({
+  const initialItems = (quote as unknown as { items?: Item[] }).items ?? [];
+  const [lines, setLines] = useState<DevisLine[]>(() =>
+    initialItems.length
+      ? initialItems.map((it, i) => ({
           id: (it as { id?: string }).id ?? `line-${i}`,
           description: it.description ?? "",
           quantity: it.quantity ?? 0,
@@ -128,8 +128,14 @@ export function DevisEditForm({
           optional: it.optional ?? false,
           optional_reason: it.optional_reason ?? undefined,
         }))
-      : [];
-  });
+      : []
+  );
+  const [initialLinePrices, setInitialLinePrices] = useState<Record<string, number>>(() =>
+    initialItems.reduce(
+      (acc, it, i) => ({ ...acc, [(it as { id?: string }).id ?? `line-${i}`]: it.unit_price ?? 0 }),
+      {} as Record<string, number>
+    )
+  );
   const [totalHt, setTotalHt] = useState(quote.total_ht ?? 0);
   const [totalTtc, setTotalTtc] = useState(quote.total_ttc ?? 0);
   const [totalTva, setTotalTva] = useState(Math.round((quote.total_ht ?? 0) * vatRateDecimal * 100) / 100);
@@ -215,12 +221,13 @@ export function DevisEditForm({
           total: l.total,
           type: l.type,
           optional: l.optional,
-          // Champs obsolètes conservés pour rétrocompatibilité mais non utilisés pour nouvelles générations IA
           optional_reason: l.optional_reason || undefined,
           estimated_range: l.estimated_range || undefined,
           pricing_note: l.pricing_note || undefined,
           cost_price_ht: l.cost_price_ht,
           margin_ht: l.margin_ht,
+          price_manually_edited:
+            initialLinePrices[l.id] !== undefined && Number(l.unit_price) !== Number(initialLinePrices[l.id]),
         };
         return payload;
       })
@@ -230,6 +237,7 @@ export function DevisEditForm({
       setSaving(false);
       return;
     }
+    setInitialLinePrices(lines.reduce((acc, l) => ({ ...acc, [l.id]: l.unit_price ?? 0 }), {}));
     toast.success("Devis enregistré.");
     setSaving(false);
     router.refresh();
@@ -398,10 +406,15 @@ export function DevisEditForm({
 
     setAiLoading(true);
     try {
+      const selectedVehicle = allVehicles.find((v) => v.id === vehicleId);
       const response = await fetch("/api/ai/generate-quote-lines", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: aiDescription.trim() }),
+        body: JSON.stringify({
+          description: aiDescription.trim(),
+          vehicle_make: selectedVehicle?.brand ?? undefined,
+          vehicle_model: selectedVehicle?.model ?? undefined,
+        }),
       });
 
       const data = await response.json();
@@ -437,6 +450,11 @@ export function DevisEditForm({
 
       const updatedLines = [...lines, ...newLines];
       setLines(updatedLines);
+      setInitialLinePrices((prev) => {
+        const next = { ...prev };
+        newLines.forEach((l) => (next[l.id] = l.unit_price ?? 0));
+        return next;
+      });
       const newTotalHt = updatedLines.reduce((s, l) => s + l.total, 0);
       const newTotalTva = Math.round(newTotalHt * vatRateDecimal * 100) / 100;
       const newTotalTtc = Math.round((newTotalHt + newTotalTva) * 100) / 100;

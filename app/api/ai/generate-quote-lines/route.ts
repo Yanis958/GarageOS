@@ -13,6 +13,7 @@ import { checkAiQuota } from "@/lib/ai/quota";
 import { logAiEvent } from "@/lib/ai/ai-events";
 import { safeAiCall } from "@/lib/ai/safe-ai";
 import { postProcessQuoteItems } from "@/lib/ai/post-process-quote-items";
+import { getPriceMemory, isPriceMemoryEnabled, normalizeKey } from "@/lib/price-memory";
 
 /**
  * Route API pour générer des lignes de devis via IA.
@@ -732,7 +733,11 @@ async function tryOpenAI(description: string): Promise<{ lines: any[] } | { erro
 }
 
 const FALLBACK_MESSAGE = "Impossible de générer automatiquement. Vous pouvez continuer en mode manuel.";
-const GenerateQuoteLinesInputSchema = z.object({ description: z.string().min(1) });
+const GenerateQuoteLinesInputSchema = z.object({
+  description: z.string().min(1),
+  vehicle_make: z.string().optional(),
+  vehicle_model: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -761,6 +766,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Données invalides. Vérifiez les champs." }, { status: 400 });
     }
     const description = parsed.data.description.trim();
+    const vehicleMake = parsed.data.vehicle_make?.trim() ?? undefined;
+    const vehicleModel = parsed.data.vehicle_model?.trim() ?? undefined;
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -813,6 +820,24 @@ export async function POST(request: NextRequest) {
       // En cas d'erreur dans le post-traitement, utiliser les lignes originales (fallback)
       console.error("[generate-quote-lines] Erreur lors du post-traitement:", postProcessError);
       processedLines = result.lines;
+    }
+
+    const usePriceMemory = await isPriceMemoryEnabled(garageId);
+    if (usePriceMemory && processedLines.length > 0) {
+      const typeMap: Record<string, "part" | "labor" | "forfait"> = {
+        piece: "part",
+        main_oeuvre: "labor",
+        forfait: "forfait",
+      };
+      for (const line of processedLines) {
+        const itemKey = normalizeKey(line.description ?? "");
+        if (!itemKey) continue;
+        const itemType = typeMap[line.type] ?? "part";
+        const memPrice = await getPriceMemory(garageId, itemType, itemKey, vehicleMake, vehicleModel);
+        if (memPrice != null && typeof line.unit_price_ht === "number") {
+          line.unit_price_ht = memPrice;
+        }
+      }
     }
     
     await recordAiUsage(garageId);

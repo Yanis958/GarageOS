@@ -123,7 +123,7 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-card/80 backdrop-blur-sm px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[#e2e8f0] bg-white/80 backdrop-blur-sm px-6">
       {/* Search */}
       <div className="flex-1 max-w-md" ref={searchRef}>
         <div className="relative">
@@ -252,7 +252,7 @@ export function Topbar() {
                     ))}
                     {toProcess.expired.length > 3 && (
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/devis?expired=1" className="text-primary">
+                        <Link href="/dashboard/devis?expired=1" className="text-[#2563eb]">
                           Voir les {toProcess.expired.length} expirés
                         </Link>
                       </DropdownMenuItem>
@@ -278,7 +278,7 @@ export function Topbar() {
                     ))}
                     {toProcess.toRelance.length > 3 && (
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/devis?toRelance=1" className="text-primary">
+                        <Link href="/dashboard/devis?toRelance=1" className="text-[#2563eb]">
                           Voir les {toProcess.toRelance.length} à relancer
                         </Link>
                       </DropdownMenuItem>
@@ -304,7 +304,7 @@ export function Topbar() {
                     ))}
                     {toProcess.toFinalize.length > 3 && (
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/devis?status=draft" className="text-primary">
+                        <Link href="/dashboard/devis?status=draft" className="text-[#2563eb]">
                           Voir les {toProcess.toFinalize.length} brouillons
                         </Link>
                       </DropdownMenuItem>
@@ -313,7 +313,7 @@ export function Topbar() {
                   </>
                 )}
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="font-medium text-primary">
+                  <Link href="/dashboard" className="font-medium text-[#2563eb]">
                     <FileText className="mr-2 h-4 w-4" />
                     Voir tout sur le tableau de bord
                   </Link>
@@ -326,7 +326,7 @@ export function Topbar() {
         {/* User pill */}
         {mounted && userEmail ? (
           <div className="flex items-center gap-2 rounded-full bg-muted/30 px-3 py-1.5 border border-border">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#dbeafe] text-[#2563eb]">
               <span className="text-xs font-semibold">{userInitial}</span>
             </div>
             <span className="hidden md:inline text-sm font-medium text-foreground">
@@ -335,7 +335,7 @@ export function Topbar() {
           </div>
         ) : (
           <div className="flex items-center gap-2 rounded-full bg-muted/30 px-3 py-1.5 border border-border">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#dbeafe] text-[#2563eb]">
               <span className="text-xs font-semibold">—</span>
             </div>
             <span className="hidden md:inline text-sm font-medium text-foreground">

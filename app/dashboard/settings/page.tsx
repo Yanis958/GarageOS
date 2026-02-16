@@ -5,6 +5,7 @@ import { User } from "lucide-react";
 import { getCurrentGarageWithSettings } from "@/lib/actions/garage";
 import { SettingsGarageForm } from "./SettingsGarageForm";
 import { GarageAppearanceSettings } from "@/components/dashboard/GarageAppearanceSettings";
+import { PriceMemorySettings } from "@/components/dashboard/PriceMemorySettings";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,6 +29,13 @@ export default async function SettingsPage() {
       </div>
 
       <SettingsGarageForm garageWithSettings={garageWithSettings} />
+
+      {garageWithSettings && (
+        <PriceMemorySettings
+          garageId={garageWithSettings.garage.id}
+          settings={garageWithSettings.settings}
+        />
+      )}
 
       {garageWithSettings && (
         <GarageAppearanceSettings

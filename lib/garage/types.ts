@@ -6,6 +6,8 @@ export type GarageAppearanceSettings = {
 
 export type GarageCustomSettings = {
   appearance?: GarageAppearanceSettings;
+  /** Utiliser les prix enregistrés du garage pour les prochains devis IA (défaut: true) */
+  price_memory_enabled?: boolean;
 };
 
 /** Paramètres du garage (table garage_settings) */

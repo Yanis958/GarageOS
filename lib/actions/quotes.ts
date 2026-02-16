@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentGarageId } from "./garage";
 import type { SuggestedQuoteLine } from "@/lib/ai/quick-note-types";
+import { isPriceMemoryEnabled, normalizeKey, upsertPriceMemory } from "@/lib/price-memory";
+import type { PriceBookItemType } from "@/lib/price-memory";
 
 export type DashboardStats = {
   totalAmount: number;
@@ -968,6 +970,8 @@ export type QuoteItemPayload = {
   pricing_note?: string;
   cost_price_ht?: number;
   margin_ht?: number;
+  /** Si true, le prix a été modifié manuellement par l'utilisateur → enregistrer dans la mémoire de prix du garage */
+  price_manually_edited?: boolean;
 };
 
 export async function saveQuoteItemsAction(quoteId: string, items: QuoteItemPayload[]): Promise<{ error?: string }> {
@@ -975,8 +979,38 @@ export async function saveQuoteItemsAction(quoteId: string, items: QuoteItemPayl
   const supabase = await createClient();
 
   if (!garageId) return { error: "Garage non identifié." };
-  const { data: q } = await supabase.from("quotes").select("id").eq("id", quoteId).eq("garage_id", garageId).single();
+  const { data: q } = await supabase.from("quotes").select("id, vehicle_id").eq("id", quoteId).eq("garage_id", garageId).single();
   if (!q) return { error: "Devis non trouvé." };
+
+  const usePriceMemory = await isPriceMemoryEnabled(garageId);
+  let vehicleMake: string | null = null;
+  let vehicleModel: string | null = null;
+  if (usePriceMemory && (q as { vehicle_id?: string | null }).vehicle_id) {
+    const vid = (q as { vehicle_id: string }).vehicle_id;
+    const { data: v } = await supabase.from("vehicles").select("brand, model").eq("id", vid).eq("garage_id", garageId).maybeSingle();
+    if (v) {
+      vehicleMake = (v as { brand?: string | null }).brand ?? null;
+      vehicleModel = (v as { model?: string | null }).model ?? null;
+    }
+  }
+
+  for (const it of items) {
+    if (!it.price_manually_edited || it.type == null || !["part", "labor", "forfait"].includes(it.type)) continue;
+    const desc = (it.description ?? "").trim();
+    const key = normalizeKey(desc);
+    if (!key) continue;
+    const price = Number(it.unit_price);
+    if (Number.isNaN(price) || price < 0) continue;
+    await upsertPriceMemory(
+      garageId,
+      it.type as PriceBookItemType,
+      key,
+      desc || key,
+      price,
+      vehicleMake,
+      vehicleModel
+    );
+  }
 
   await supabase.from("quote_items").delete().eq("quote_id", quoteId);
 
