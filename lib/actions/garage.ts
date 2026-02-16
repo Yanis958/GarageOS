@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { GarageSettings, GarageWithSettings } from "@/lib/garage/types";
+import type { GarageSettings, GarageWithSettings, GarageCustomSettings } from "@/lib/garage/types";
 
 /** IDs des garages dont l'utilisateur connecté est membre (garage_members). Aucun fallback : pas d'accès cross-garage. */
 export async function getCurrentGarageId(): Promise<string | null> {
@@ -139,13 +139,7 @@ export type GarageSettingsPayload = {
   theme_text?: string | null;
   pdf_style?: string | null;
   // Settings personnalisés JSONB
-  custom_settings?: {
-    appearance?: {
-      footer_text?: string | null;
-      show_logo_on_pdf?: boolean;
-      enable_compact_mode?: boolean;
-    };
-  };
+  custom_settings?: GarageCustomSettings;
 };
 
 /** Met à jour les paramètres du garage (upsert). Vérifie que l'utilisateur appartient au garage. */
