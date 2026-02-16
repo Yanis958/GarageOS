@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DashboardPreviewMock } from "./DashboardPreviewMock";
+import { HeroBeforeAfter } from "./HeroBeforeAfter";
 import {
   FileText,
   Receipt,
@@ -177,7 +177,7 @@ export function LandingHero({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="w-full max-w-md flex-shrink-0 lg:max-w-sm">
-            <DashboardPreviewMock />
+            <HeroBeforeAfter />
           </div>
         </div>
       </div>
@@ -258,20 +258,8 @@ export function LandingSections() {
             </div>
 
             {/* Colonne droite : FAQ sticky accordéon */}
-            <aside id="faq" className="lg:sticky lg:top-8 lg:self-start space-y-8">
+            <aside id="faq" className="lg:sticky lg:top-8 lg:self-start">
               <FAQAccordion />
-              <div className="mt-8 w-full bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-2xl p-8 text-white">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block" aria-hidden>🚀</span>
-                  <h3 className="text-2xl font-bold mb-3">Prêt à simplifier votre garage ?</h3>
-                  <p className="text-purple-100 mb-6">
-                    Demandez une démo personnalisée et découvrez comment GARAGE OS peut transformer votre quotidien.
-                  </p>
-                  <Button asChild className="w-full bg-white text-purple-600 font-bold px-8 py-4 rounded-xl hover:bg-purple-50 transition-all h-auto">
-                    <Link href="/login">Demander une démo</Link>
-                  </Button>
-                </div>
-              </div>
             </aside>
           </div>
         </div>
