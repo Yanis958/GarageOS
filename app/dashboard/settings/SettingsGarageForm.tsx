@@ -321,7 +321,7 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
             </div>
             <div className="space-y-2">
               <Label htmlFor="primary-color">Couleur d'accent (optionnel)</Label>
-              <Input id="primary-color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} placeholder="ex. #2563eb" className="max-w-[120px]" />
+              <Input id="primary-color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} placeholder="ex. #7C3AED" className="max-w-[120px]" />
             </div>
             <Button type="submit" size="sm" disabled={saving}>
               {saving ? "Enregistrement…" : "Enregistrer"}

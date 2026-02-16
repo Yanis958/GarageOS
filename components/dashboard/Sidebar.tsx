@@ -17,7 +17,7 @@ export async function Sidebar() {
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-border bg-card shadow-sm">
       {/* Header avec logo */}
       <div className="flex items-center gap-3 border-b border-border px-6 py-5">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#2563eb] text-white shadow-sm">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
           <Wrench className="h-5 w-5" />
         </div>
         <div className="flex min-w-0 flex-col">
@@ -37,7 +37,7 @@ export async function Sidebar() {
         </div>
         {user && (
           <div className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#dbeafe] text-[#2563eb]">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
               <span className="text-xs font-semibold">
                 {userEmail.charAt(0).toUpperCase()}
               </span>

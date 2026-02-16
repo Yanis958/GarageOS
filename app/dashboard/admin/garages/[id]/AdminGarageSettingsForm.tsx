@@ -102,7 +102,7 @@ export function AdminGarageSettingsForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="primary_color">Couleur d’accent</Label>
-            <Input id="primary_color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} placeholder="#2563eb" className="max-w-[120px]" />
+            <Input id="primary_color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} placeholder="#7C3AED" className="max-w-[120px]" />
           </div>
           <Button type="submit" size="sm" disabled={saving}>
             {saving ? "Enregistrement…" : "Enregistrer"}
