@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,7 @@ import {
   Mail,
   UserPlus,
   LayoutDashboard,
+  ChevronDown,
 } from "lucide-react";
 
 const BADGES = [
@@ -28,7 +30,7 @@ const BADGES = [
 const AVANTAGES = [
   {
     title: "Générez vos devis en 30 secondes",
-    description: "L’IA propose lignes et montants. Vous validez, le client reçoit.",
+    description: "L'IA propose lignes et montants. Vous validez, le client reçoit.",
     icon: FileText,
   },
   {
@@ -64,22 +66,83 @@ const ETAPES = [
   { step: 3, text: "Vous gérez devis, factures et IA", icon: LayoutDashboard },
 ];
 
-const FAQ = [
+const FAQ_ITEMS = [
+  {
+    q: "L'IA génère vraiment mes devis en 30 secondes ?",
+    a: "Oui. L'IA analyse votre demande, propose automatiquement les pièces et prestations usuelles avec les tarifs. Vous validez, ajustez si besoin, et le client reçoit son devis. Fini la saisie manuelle ligne par ligne.",
+  },
+  {
+    q: "Puis-je importer mes clients et historique existants ?",
+    a: "Absolument. Nous gérons la migration de vos données depuis votre ancien système (Excel, autre CRM, etc.). Vos clients, véhicules et historique d'interventions sont importés dès l'installation.",
+  },
+  {
+    q: "Mes données sont-elles conformes au RGPD ?",
+    a: "Oui. Chaque garage dispose de ses propres données 100% séparées. Vos informations sont hébergées en France et conformes au RGPD. Vous gardez le contrôle total sur vos données clients.",
+  },
+  {
+    q: "Puis-je exporter mes données à tout moment ?",
+    a: "Oui. Vous pouvez exporter l'ensemble de vos données (clients, véhicules, factures, devis) à tout moment au format Excel ou CSV. Vos données vous appartiennent.",
+  },
   {
     q: "Puis-je créer un compte sans invitation ?",
-    a: "Non. L’accès se fait uniquement sur invitation. Demandez un lien à l’administrateur de votre garage.",
+    a: "Non. L'accès se fait uniquement sur invitation. Demandez un lien à l'administrateur de votre garage qui contrôle les accès de son équipe.",
   },
   {
-    q: "Mes données sont-elles séparées des autres garages ?",
-    a: "Oui. Chaque garage dispose de ses propres données (clients, véhicules, devis, factures).",
+    q: "Faut-il une formation pour utiliser l'app ?",
+    a: "Une courte formation est incluse lors de l'installation. L'interface est intuitive et vos équipes sont autonomes dès le premier jour.",
   },
   {
-    q: "Je dois intégrer un paiement dans l’app ?",
-    a: "Non. GARAGE OS ne gère pas les encaissements. Le garage encaisse comme d’habitude (CB, chèque, etc.).",
+    q: "Que se passe-t-il si j'ai plusieurs sites ?",
+    a: "Chaque garage a sa propre instance avec ses données séparées. Vous pouvez gérer plusieurs garages de manière indépendante.",
   },
 ];
 
-/** Hero : titre impactant, glow, CTA "Accéder à mon espace" ou slot enfants (formulaire login) */
+function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  return (
+    <div className="space-y-2">
+      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl mb-6">
+        Questions fréquentes
+      </h2>
+      <ul className="space-y-2">
+        {FAQ_ITEMS.map((item, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <li
+              key={item.q}
+              className="rounded-lg border border-border bg-card/30 overflow-hidden transition-all duration-300"
+            >
+              <button
+                type="button"
+                onClick={() => setOpenIndex(isOpen ? -1 : index)}
+                className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left font-semibold text-foreground hover:bg-primary/5 transition-colors duration-200"
+              >
+                <span className="text-sm sm:text-base">{item.q}</span>
+                <ChevronDown
+                  className={`h-5 w-5 shrink-0 text-primary transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              <div
+                className={`grid transition-all duration-300 ease-out ${
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="px-4 pb-4 pt-0 text-sm leading-relaxed text-muted-foreground">
+                    {item.a}
+                  </p>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/** Hero : titre impactant, CTA "Demander une démo", réassurance */
 export function LandingHero({ children }: { children: React.ReactNode }) {
   return (
     <section className="relative overflow-hidden px-4 py-20 sm:py-24 md:py-28">
@@ -88,32 +151,29 @@ export function LandingHero({ children }: { children: React.ReactNode }) {
           <div className="flex flex-1 flex-col items-center text-center lg:items-center lg:text-center">
             <div className="relative inline-block">
               <span className="absolute -inset-4 rounded-full bg-primary/20 blur-2xl" aria-hidden />
-              <h1 className="relative text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-6xl">
-                GARAGE OS
+              <h1 className="relative text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-5xl">
+                Le CRM qui fait gagner 2h par jour à votre garage
               </h1>
             </div>
-            <p className="relative mt-6 max-w-xl text-xl font-medium text-foreground sm:text-2xl">
-              La gestion de votre garage, simplifiée.
+            <p className="relative mt-6 max-w-2xl text-lg font-medium text-foreground sm:text-xl">
+              Devis IA en 30 secondes • Données 100% sécurisées • Multi-garages
             </p>
-            <p className="relative mt-2 max-w-lg text-base text-muted-foreground">
-              Devis, factures et suivi clients. Sans la paperasse.
-            </p>
-            <div className="relative mt-8 flex flex-wrap justify-center gap-3">
+            <div className="relative mt-6 flex flex-wrap justify-center gap-3">
               {BADGES.map((b) => (
                 <Badge
                   key={b.label}
                   variant="secondary"
-                  className="rounded-button border border-primary/30 bg-primary/15 text-foreground transition-colors hover:border-primary/50 hover:bg-primary/25"
+                  className="rounded-full border border-primary/30 bg-primary/15 text-foreground transition-colors hover:border-primary/50 hover:bg-primary/25"
                 >
                   {b.label}
                 </Badge>
               ))}
             </div>
-            <p className="relative mt-4 text-sm text-foreground/80">
-              Multi-garages · Données séparées · Devis & factures rapides
-            </p>
             <div className="relative mt-10 w-full max-w-md flex flex-col items-center gap-4">
               {children}
+              <p className="text-xs text-muted-foreground text-center">
+                ✓ Sans engagement • ✓ Installation en 1 jour • ✓ Support inclus
+              </p>
             </div>
           </div>
           <div className="w-full max-w-md flex-shrink-0 lg:max-w-sm">
@@ -125,91 +185,104 @@ export function LandingHero({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Sections : Avantages, Comment ça marche, FAQ, Footer */
+/** Sections : layout 2 colonnes (contenu 60% | FAQ 40% sticky), cartes, étapes, social proof, footer */
 export function LandingSections() {
   return (
     <>
-      {/* Features — bénéfices business, hover premium */}
-      <section className="border-t border-border px-4 py-20 sm:py-24">
+      <section id="content-wrapper" className="border-t border-border px-4 py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-            Pourquoi GARAGE OS
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
-            CRM garage pensé pour le résultat : moins de temps en admin, plus pour vos clients.
-          </p>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {AVANTAGES.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Card
-                  key={item.title}
-                  className="border-border bg-card/50 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-                >
-                  <CardHeader>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 text-primary">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle className="text-lg font-semibold">{item.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Comment ça marche — ligne horizontale, étapes claires */}
-      <section className="border-t border-border px-4 py-20 sm:py-24">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-            Comment ça marche
-          </h2>
-          <div className="relative mt-14 flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
-            {ETAPES.map((e) => {
-              const Icon = e.icon;
-              return (
-                <div key={e.step} className="relative flex flex-1 flex-col items-center text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/40 bg-primary/10 text-primary shadow-lg shadow-primary/10">
-                    <Icon className="h-7 w-7" />
-                  </div>
-                  <span className="mt-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {e.step}
-                  </span>
-                  <p className="mt-3 text-sm font-medium text-foreground">{e.text}</p>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_380px] lg:gap-8 xl:gap-12">
+            {/* Colonne gauche : Pourquoi GARAGE OS + Comment ça marche + Social proof */}
+            <div id="features" className="min-w-0 space-y-20 lg:space-y-24">
+              {/* Pourquoi GARAGE OS — 6 cartes, icônes grosses et colorées */}
+              <div>
+                <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Pourquoi GARAGE OS
+                </h2>
+                <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
+                  CRM garage pensé pour le résultat : moins de temps en admin, plus pour vos clients.
+                </p>
+                <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {AVANTAGES.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Card
+                        key={item.title}
+                        className="border-border bg-card/50 transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+                      >
+                        <CardHeader className="space-y-4">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/25 text-primary">
+                            <Icon className="h-7 w-7" />
+                          </div>
+                          <CardTitle className="text-base font-bold leading-snug">{item.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
+                            {item.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Comment ça marche — 3 étapes */}
+              <div>
+                <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Comment ça marche
+                </h2>
+                <div className="relative mt-14 flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+                  {ETAPES.map((e) => {
+                    const Icon = e.icon;
+                    return (
+                      <div key={e.step} className="relative flex flex-1 flex-col items-center text-center">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/40 bg-primary/10 text-primary shadow-lg shadow-primary/10">
+                          <Icon className="h-7 w-7" />
+                        </div>
+                        <span className="mt-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                          {e.step}
+                        </span>
+                        <p className="mt-3 text-sm font-medium text-foreground">{e.text}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Social proof — minimaliste */}
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">Ils nous font confiance</p>
+                <p className="mt-2 text-lg font-semibold text-foreground">10+ garages équipés</p>
+              </div>
+            </div>
+
+            {/* Colonne droite : FAQ sticky accordéon */}
+            <aside id="faq" className="lg:sticky lg:top-8 lg:self-start space-y-8">
+              <FAQAccordion />
+              <div className="mt-8 w-full bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl shadow-2xl p-8 text-white">
+                <div className="text-center">
+                  <span className="text-4xl mb-4 block" aria-hidden>🚀</span>
+                  <h3 className="text-2xl font-bold mb-3">Prêt à simplifier votre garage ?</h3>
+                  <p className="text-purple-100 mb-6">
+                    Demandez une démo personnalisée et découvrez comment GARAGE OS peut transformer votre quotidien.
+                  </p>
+                  <Button asChild className="w-full bg-white text-purple-600 font-bold px-8 py-4 rounded-xl hover:bg-purple-50 transition-all h-auto">
+                    <Link href="/login">Demander une démo</Link>
+                  </Button>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
 
-      {/* FAQ — contraste, séparateurs */}
-      <section className="border-t border-border px-4 py-20 sm:py-24">
-        <div className="mx-auto max-w-2xl">
-          <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-            Questions fréquentes
-          </h2>
-          <ul className="mt-12 divide-y divide-border">
-            {FAQ.map((item) => (
-              <li key={item.q} className="py-6 first:pt-0">
-                <h3 className="font-semibold text-foreground">{item.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Footer — minimal, pro */}
-      <footer className="border-t border-border px-4 py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row flex-wrap">
-          <span className="text-sm text-muted-foreground">
-            © GARAGE OS – SaaS privé pour garages
-          </span>
+      {/* Footer — une ligne, logo + liens + © */}
+      <footer className="border-t border-border px-4 py-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+          <Link href="/" className="text-lg font-bold tracking-tight text-foreground">
+            GARAGE OS
+          </Link>
           <div className="flex items-center gap-6">
             <a
               href="mailto:support@garageos.com"
@@ -223,7 +296,16 @@ export function LandingSections() {
             >
               Accès sur invitation
             </Link>
+            <Link
+              href="/"
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Retour à l&apos;accueil
+            </Link>
           </div>
+          <span className="text-sm text-muted-foreground">
+            © GARAGE OS – SaaS privé pour garages
+          </span>
         </div>
       </footer>
     </>
@@ -234,10 +316,13 @@ export function LandingPage() {
   return (
     <div className="dark min-h-screen bg-background text-foreground">
       <LandingHero>
-        <Button asChild size="lg" className="rounded-button px-8 text-base font-semibold">
-          <Link href="/login">Accéder à mon espace</Link>
+        <Button
+          asChild
+          size="lg"
+          className="rounded-full bg-primary px-10 py-6 text-base font-semibold shadow-lg hover:bg-primary/90"
+        >
+          <Link href="/login">Demander une démo</Link>
         </Button>
-        <p className="text-xs text-muted-foreground">Accès uniquement sur invitation</p>
       </LandingHero>
       <LandingSections />
     </div>
