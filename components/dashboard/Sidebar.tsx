@@ -14,7 +14,7 @@ export async function Sidebar() {
   const userEmail = user?.email || "";
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-[#e2e8f0] bg-white shadow-sm">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-border bg-card shadow-sm">
       {/* Header avec logo */}
       <div className="flex items-center gap-3 border-b border-border px-6 py-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#2563eb] text-white shadow-sm">

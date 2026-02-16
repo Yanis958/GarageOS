@@ -123,7 +123,7 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[#e2e8f0] bg-white/80 backdrop-blur-sm px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-card/80 backdrop-blur-sm px-6">
       {/* Search */}
       <div className="flex-1 max-w-md" ref={searchRef}>
         <div className="relative">
