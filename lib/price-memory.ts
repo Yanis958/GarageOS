@@ -19,8 +19,8 @@ export function normalizeKey(text: string): string {
   let s = text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
     .replace(STOP_WORDS, " ")
     .replace(/\s+/g, " ")
     .trim();
