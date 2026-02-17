@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getClientById } from "@/lib/actions/clients";
-import { getQuotesByClientId } from "@/lib/actions/quotes";
+import { getQuotesByClientId, getQuotes } from "@/lib/actions/quotes";
 import { getQuickTasksByEntity } from "@/lib/actions/quick-tasks";
 import { getVehiclesByClientId } from "@/lib/actions/vehicles";
 import { ClientVehiclesSection } from "@/components/dashboard/ClientVehiclesSection";
@@ -14,6 +14,7 @@ import { EntityActionsMenu } from "@/components/archive-actions/EntityActionsMen
 import { ArrowLeft, User, FileText, PlusCircle } from "lucide-react";
 import { ClientMessageBlock } from "@/components/dashboard/ClientMessageBlock";
 import { QuickNoteBlock } from "@/components/dashboard/QuickNoteBlock";
+import { generateReadableReferences, getReadableReference } from "@/lib/utils/quote-reference";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +27,9 @@ export default async function ClientDetailPage({
   const client = await getClientById(id);
   if (!client) redirect("/dashboard/clients");
 
-  const [quotes, quickTasks, vehicles] = await Promise.all([
+  const [quotes, allQuotes, quickTasks, vehicles] = await Promise.all([
     getQuotesByClientId(id),
+    getQuotes(),
     getQuickTasksByEntity("client", id),
     getVehiclesByClientId(id, false),
   ]);
@@ -44,6 +46,12 @@ export default async function ClientDetailPage({
   };
 
   const isArchived = !!(client as { archived_at?: string | null }).archived_at;
+
+  // Générer les références lisibles pour toutes les quotes
+  const sortedAllQuotes = [...allQuotes].sort((a, b) => 
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  const readableReferences = generateReadableReferences(sortedAllQuotes);
 
   return (
     <div className="space-y-6">
@@ -174,7 +182,7 @@ export default async function ClientDetailPage({
                     <tr key={q.id}>
                       <td className="py-2">
                         <Link href={`/dashboard/devis/${q.id}`} className="font-medium text-foreground hover:underline">
-                          {q.reference ?? `#${q.id.slice(0, 8)}`}
+                          {getReadableReference(q.id, readableReferences, q.reference)}
                         </Link>
                       </td>
                       <td className="py-2 text-muted-foreground">

@@ -9,6 +9,7 @@ import { EntityActionsMenu } from "@/components/archive-actions/EntityActionsMen
 import { ExportDevisDropdown } from "@/components/dashboard/ExportDevisDropdown";
 import { DataTable, DataTableColumn } from "@/components/dashboard/DataTable";
 import { GenerateMissingFacturesButton } from "@/components/dashboard/GenerateMissingFacturesButton";
+import { generateReadableReferences, getReadableReference } from "@/lib/utils/quote-reference";
 
 const STATUS_OPTIONS = [
   { value: "", label: "Tous les statuts" },
@@ -79,13 +80,19 @@ export default async function DevisPage({
     facture_number: facturesOnly ? "not_null" : undefined,
   });
 
+  // Générer les références lisibles (trier par date de création pour numérotation)
+  const sortedQuotes = [...quotes].sort((a, b) => 
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  const readableReferences = generateReadableReferences(sortedQuotes);
+
   const columns: DataTableColumn<typeof quotes[0]>[] = [
     {
       key: "reference",
       header: "Réf",
       render: (q) => (
         <span className="font-semibold text-primary">
-          {q.reference ?? `#${q.id.slice(0, 8)}`}
+          {getReadableReference(q.id, readableReferences, q.reference)}
         </span>
       ),
       sortable: true,
@@ -235,7 +242,7 @@ export default async function DevisPage({
           <Button asChild size="sm" className="rounded-button bg-primary text-primary-foreground shadow-sm hover:shadow-md">
             <Link href="/dashboard/devis/new" className="inline-flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Nouveau devis
+              {facturesOnly ? "Nouvelle facture" : "Nouveau devis"}
             </Link>
           </Button>
         </div>

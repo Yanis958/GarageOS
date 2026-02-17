@@ -18,7 +18,7 @@ export async function getVehicles(search?: string, archived?: boolean) {
   try {
     const { data: rawData, error: rawError } = await supabase
       .from("vehicles")
-      .select("id, registration, brand, model, year, garage_id, client_id, created_at, archived_at")
+      .select("id, registration, brand, model, year, mileage, garage_id, client_id, created_at, archived_at")
       .order("created_at", { ascending: false })
       .limit(500);
 
@@ -38,6 +38,7 @@ export async function getVehicles(search?: string, archived?: boolean) {
         brand: (v as { brand?: string | null }).brand ?? undefined,
         model: (v as { model?: string | null }).model ?? undefined,
         year: (v as { year?: number | null }).year ?? undefined,
+        mileage: (v as { mileage?: number | null }).mileage ?? undefined,
         client_id: v.client_id ?? null,
         archived_at: (v as { archived_at?: string | null })?.archived_at ?? null,
         ...(v as { garage_id?: string | null }),

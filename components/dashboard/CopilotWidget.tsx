@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Sheet,
@@ -24,23 +25,29 @@ type ChatMessage = {
 /** Fallback si aucun nom de garage. */
 const COPILOT_TITLE_FALLBACK = "Copilote du garage";
 
-/** 6 suggestions stratégiques : décision business, pas de surcharge. */
+/** 8 suggestions stratégiques : décision business, pas de surcharge. */
 const SUGGESTIONS = [
-  "🔥 Quels devis risquent d'être perdus ?",
-  "💰 Quel devis prioriser pour maximiser le CA ?",
-  "⏳ Quels clients relancer en priorité ?",
-  "📈 Comment améliorer mon taux de conversion ?",
-  "📊 Pourquoi mon CA est faible ce mois-ci ?",
   "⚡ Résume mes actions urgentes aujourd'hui",
+  "🔥 Quels devis risquent d'être perdus ?",
+  "💰 Quelles factures sont en attente de paiement ?",
+  "⏰ Quels clients n'ont pas repris contact depuis 3 mois ?",
+  "📊 Quel est mon CA réel ce mois vs le mois dernier ?",
+  "🚗 Quels véhicules ont une intervention à prévoir ?",
+  "📉 Pourquoi mes devis sont refusés ?",
+  "🎯 Quels devis closer cette semaine pour maximiser mon CA ?",
 ];
 
 export function CopilotWidget({ garageName = null }: { garageName?: string | null }) {
+  const pathname = usePathname();
   const copilotTitle = garageName?.trim() ? `Copilote de ${garageName.trim()}` : COPILOT_TITLE_FALLBACK;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Afficher le bouton uniquement sur la page tableau de bord
+  const isDashboardPage = pathname === "/dashboard" || pathname === "/dashboard/";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -103,14 +110,16 @@ export function CopilotWidget({ garageName = null }: { garageName?: string | nul
 
   return (
     <>
-      <Button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 rounded-full h-14 w-14 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 p-0 md:h-12 md:w-auto md:rounded-button md:px-4 md:gap-2"
-        aria-label="Ouvrir le copilote"
-      >
-        <MessageCircle className="h-6 w-6 md:h-5 md:w-5" />
-        <span className="hidden md:inline">Copilote</span>
-      </Button>
+      {isDashboardPage && (
+        <Button
+          onClick={() => setOpen(true)}
+          className="fixed bottom-6 right-6 z-50 rounded-full h-14 w-14 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 p-0 md:h-12 md:w-auto md:rounded-button md:px-4 md:gap-2"
+          aria-label="Ouvrir le copilote"
+        >
+          <MessageCircle className="h-6 w-6 md:h-5 md:w-5" />
+          <span className="hidden md:inline">Copilote</span>
+        </Button>
+      )}
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">

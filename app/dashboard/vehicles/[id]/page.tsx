@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getVehicleById } from "@/lib/actions/vehicles";
-import { getQuotesByVehicleId } from "@/lib/actions/quotes";
+import { getQuotesByVehicleId, getQuotes } from "@/lib/actions/quotes";
 import { getQuickTasksByEntity } from "@/lib/actions/quick-tasks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
@@ -12,6 +12,7 @@ import { EntityActionsMenu } from "@/components/archive-actions/EntityActionsMen
 import { VehicleCreatedToast } from "./VehicleCreatedToast";
 import { Car, FileText, ArrowLeft, PlusCircle } from "lucide-react";
 import { QuickNoteBlock } from "@/components/dashboard/QuickNoteBlock";
+import { generateReadableReferences, getReadableReference } from "@/lib/utils/quote-reference";
 
 export default async function VehicleDetailPage({
   params,
@@ -25,15 +26,22 @@ export default async function VehicleDetailPage({
   const vehicle = await getVehicleById(id);
   if (!vehicle) redirect("/dashboard/vehicles");
 
-  const [quotes, quickTasks] = await Promise.all([
+  const [quotes, quickTasks, allQuotes] = await Promise.all([
     getQuotesByVehicleId(id),
     getQuickTasksByEntity("vehicle", id),
+    getQuotes(),
   ]);
   const clientName =
     vehicle.clients && typeof vehicle.clients === "object" && "name" in vehicle.clients
       ? (vehicle.clients as { name: string | null }).name
       : null;
   const isArchived = !!(vehicle as { archived_at?: string | null }).archived_at;
+
+  // Générer les références lisibles pour toutes les quotes
+  const sortedAllQuotes = [...allQuotes].sort((a, b) => 
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  const readableReferences = generateReadableReferences(sortedAllQuotes);
 
   return (
     <div className="space-y-6">
@@ -72,6 +80,9 @@ export default async function VehicleDetailPage({
           {vehicle.brand && <p><strong className="text-foreground">Marque :</strong> {vehicle.brand}</p>}
           {vehicle.model && <p><strong className="text-foreground">Modèle :</strong> {vehicle.model}</p>}
           {vehicle.year && <p><strong className="text-foreground">Année :</strong> {vehicle.year}</p>}
+          {(vehicle as { mileage?: number | null }).mileage && (
+            <p><strong className="text-foreground">Kilomètres :</strong> {((vehicle as { mileage?: number | null }).mileage ?? 0).toLocaleString("fr-FR")} km</p>
+          )}
           {clientName && (
             <p>
               <strong className="text-foreground">Client :</strong>{" "}
@@ -143,7 +154,7 @@ export default async function VehicleDetailPage({
                     <tr key={q.id}>
                       <td className="py-2">
                         <Link href={`/dashboard/devis/${q.id}`} className="font-medium text-foreground hover:underline">
-                          {q.reference ?? `#${q.id.slice(0, 8)}`}
+                          {getReadableReference(q.id, readableReferences, q.reference)}
                         </Link>
                       </td>
                       <td className="py-2">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getClients } from "@/lib/actions/clients";
 import { getVehicles } from "@/lib/actions/vehicles";
+import { getQuotes } from "@/lib/actions/quotes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EntityActionsMenu } from "@/components/archive-actions/EntityActionsMenu";
@@ -18,9 +19,10 @@ export default async function ClientsPage({
   const { q, archived } = await searchParams;
   const search = typeof q === "string" ? q : undefined;
   const showArchived = archived === "1";
-  const [clients, vehiclesList] = await Promise.all([
+  const [clients, vehiclesList, allQuotes] = await Promise.all([
     getClients(search, showArchived),
     getVehicles(undefined, false),
+    getQuotes({ status: "accepted" }),
   ]);
 
   const vehiclesByClientId = new Map<string, { registration: string | null; brand?: string | null; model?: string | null }[]>();
@@ -33,6 +35,15 @@ export default async function ClientsPage({
       brand: v.brand ?? null,
       model: v.model ?? null,
     });
+  }
+
+  // Calculer le CA total par client (somme des factures acceptées)
+  const caByClientId = new Map<string, number>();
+  for (const quote of allQuotes) {
+    if (quote.status === "accepted" && quote.client_id) {
+      const currentCA = caByClientId.get(quote.client_id) ?? 0;
+      caByClientId.set(quote.client_id, currentCA + Number(quote.total_ttc ?? 0));
+    }
   }
 
   const columns: DataTableColumn<(typeof clients)[0]>[] = [
@@ -67,6 +78,19 @@ export default async function ClientsPage({
           </span>
         );
       },
+    },
+    {
+      key: "ca_total",
+      header: "CA Total",
+      render: (c) => {
+        const ca = caByClientId.get(c.id) ?? 0;
+        return (
+          <span className={ca > 0 ? "font-medium text-foreground tabular-nums" : "text-muted-foreground tabular-nums"}>
+            {ca.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € TTC
+          </span>
+        );
+      },
+      sortable: true,
     },
     {
       key: "status",

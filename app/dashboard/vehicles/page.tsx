@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getVehicles } from "@/lib/actions/vehicles";
+import { getQuotes } from "@/lib/actions/quotes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EntityActionsMenu } from "@/components/archive-actions/EntityActionsMenu";
@@ -17,7 +18,37 @@ export default async function VehiclesPage({
   const { q, archived } = await searchParams;
   const search = typeof q === "string" ? q : undefined;
   const showArchived = archived === "1";
-  const vehicles = await getVehicles(search, showArchived);
+  const [vehicles, allQuotes] = await Promise.all([
+    getVehicles(search, showArchived),
+    getQuotes({ status: "accepted" }),
+  ]);
+
+  // Créer un Map pour la dernière intervention par véhicule (date du dernier devis accepté)
+  const lastInterventionByVehicleId = new Map<string, Date>();
+  for (const quote of allQuotes) {
+    if (quote.status === "accepted" && quote.vehicle_id) {
+      const existingDate = lastInterventionByVehicleId.get(quote.vehicle_id);
+      const quoteDate = new Date(quote.created_at);
+      if (!existingDate || quoteDate > existingDate) {
+        lastInterventionByVehicleId.set(quote.vehicle_id, quoteDate);
+      }
+    }
+  }
+
+  // Fonction pour formater la date de dernière intervention
+  const formatLastIntervention = (vehicleId: string): string => {
+    const date = lastInterventionByVehicleId.get(vehicleId);
+    if (!date) return <span className="text-muted-foreground">Aucune</span>;
+    const today = new Date();
+    const diffTime = today.getTime() - date.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Hier";
+    if (diffDays < 7) return `Il y a ${diffDays} jours`;
+    
+    return date.toLocaleDateString("fr-FR");
+  };
 
   const columns: DataTableColumn<typeof vehicles[0]>[] = [
     {
@@ -61,13 +92,29 @@ export default async function VehiclesPage({
       },
     },
     {
-      key: "status",
-      header: "Statut",
-      render: (v) => (
-        <span className="flex items-center gap-1.5">
-          {v.archived_at && <Badge variant="archived">Archivé</Badge>}
-        </span>
-      ),
+      key: "last_intervention",
+      header: "Dernière intervention",
+      render: (v) => {
+        const intervention = formatLastIntervention(v.id);
+        return typeof intervention === "string" ? (
+          <span className="text-muted-foreground">{intervention}</span>
+        ) : (
+          intervention
+        );
+      },
+    },
+    {
+      key: "mileage",
+      header: "Kilométrage",
+      render: (v) => {
+        const mileage = (v as { mileage?: number | null }).mileage;
+        if (!mileage) return <span className="text-muted-foreground">—</span>;
+        return (
+          <span className="text-muted-foreground tabular-nums">
+            {mileage.toLocaleString("fr-FR")} km
+          </span>
+        );
+      },
     },
   ];
 
