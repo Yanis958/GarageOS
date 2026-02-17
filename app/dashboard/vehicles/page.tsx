@@ -36,9 +36,9 @@ export default async function VehiclesPage({
   }
 
   // Fonction pour formater la date de dernière intervention
-  const formatLastIntervention = (vehicleId: string): string => {
+  const formatLastIntervention = (vehicleId: string): string | null => {
     const date = lastInterventionByVehicleId.get(vehicleId);
-    if (!date) return <span className="text-muted-foreground">Aucune</span>;
+    if (!date) return null;
     const today = new Date();
     const diffTime = today.getTime() - date.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -96,11 +96,10 @@ export default async function VehiclesPage({
       header: "Dernière intervention",
       render: (v) => {
         const intervention = formatLastIntervention(v.id);
-        return typeof intervention === "string" ? (
-          <span className="text-muted-foreground">{intervention}</span>
-        ) : (
-          intervention
-        );
+        if (!intervention) {
+          return <span className="text-muted-foreground">Aucune</span>;
+        }
+        return <span className="text-muted-foreground">{intervention}</span>;
       },
     },
     {
