@@ -8,6 +8,7 @@ import { GarageAppearanceSettings } from "@/components/dashboard/GarageAppearanc
 import { PriceMemorySettings } from "@/components/dashboard/PriceMemorySettings";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { createClient } from "@/lib/supabase/server";
+import { isAdmin } from "@/lib/actions/admin";
 
 export const dynamic = "force-dynamic";
 
