@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getGaragesForAdmin, getAuditLogsForAdmin } from "@/lib/actions/admin";
-import { Building2, ChevronRight, History } from "lucide-react";
+import { Building2, ChevronRight, History, Mail, Settings } from "lucide-react";
 import { InviteGenerator } from "@/components/dashboard/admin/InviteGenerator";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +62,42 @@ export default async function AdminPage() {
           )}
         </CardContent>
       </Card>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="border-border shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Mail className="h-5 w-5" />
+              Invitations
+            </CardTitle>
+            <CardDescription>Gérer les liens d'invitation uniques</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link href="/dashboard/admin/invitations">
+                Gérer les invitations
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Settings className="h-5 w-5" />
+              Gestion des garages
+            </CardTitle>
+            <CardDescription>Activer/désactiver les garages</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/dashboard/admin/garages-management">
+                Gérer les garages
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
       <InviteGenerator />
 

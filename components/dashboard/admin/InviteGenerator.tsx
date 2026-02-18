@@ -9,14 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Mail, Copy, Loader2, Check } from "lucide-react";
 
 export function InviteGenerator() {
-  const [email, setEmail] = useState("");
+  const [garageName, setGarageName] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   async function handleCreateInvite() {
-    if (!email || !email.includes("@")) {
-      toast.error("Veuillez entrer un email valide");
+    if (!garageName || !garageName.trim()) {
+      toast.error("Veuillez entrer un nom de garage");
       return;
     }
 
@@ -25,12 +25,12 @@ export function InviteGenerator() {
     setCopied(false);
 
     try {
-      const response = await fetch("/api/invites/create", {
+      const response = await fetch("/api/admin/invitations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ garageName: garageName.trim() }),
       });
 
       const data = await response.json();
@@ -40,8 +40,9 @@ export function InviteGenerator() {
         return;
       }
 
-      if (data.invite?.invite_url) {
-        setInviteLink(data.invite.invite_url);
+      if (data.token) {
+        const url = `${window.location.origin}/invitation/${data.token}`;
+        setInviteLink(url);
         toast.success("Invitation créée avec succès");
       } else {
         toast.error("Réponse invalide du serveur");
@@ -81,14 +82,14 @@ export function InviteGenerator() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="invite-email">Email de l'invité</Label>
+          <Label htmlFor="invite-garage-name">Nom du garage</Label>
           <div className="flex gap-2">
             <Input
-              id="invite-email"
-              type="email"
-              placeholder="exemple@garage.fr"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="invite-garage-name"
+              type="text"
+              placeholder="Ex: Garage Martin"
+              value={garageName}
+              onChange={(e) => setGarageName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !loading) {
                   handleCreateInvite();
@@ -99,7 +100,8 @@ export function InviteGenerator() {
             />
             <Button
               onClick={handleCreateInvite}
-              disabled={loading || !email}
+              disabled={loading || !garageName.trim()}
+              className="bg-primary text-primary-foreground"
             >
               {loading ? (
                 <>
@@ -107,7 +109,7 @@ export function InviteGenerator() {
                   Création...
                 </>
               ) : (
-                "Créer"
+                "Générer le lien"
               )}
             </Button>
           </div>
@@ -136,7 +138,7 @@ export function InviteGenerator() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Copiez ce lien et envoyez-le à l'invité. Le lien expire dans 30 jours.
+              Copiez ce lien et envoyez-le. Le garage créé aura 7 jours d'essai gratuit.
             </p>
           </div>
         )}

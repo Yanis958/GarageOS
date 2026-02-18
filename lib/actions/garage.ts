@@ -26,6 +26,8 @@ export type CurrentGarage = {
   name: string | null;
   slug?: string | null;
   address: string | null;
+  trial_end_date: string | null;
+  is_active: boolean;
 };
 
 export async function getCurrentGarage(): Promise<CurrentGarage | null> {
@@ -35,7 +37,7 @@ export async function getCurrentGarage(): Promise<CurrentGarage | null> {
   const supabase = await createClient();
   const { data: garage } = await supabase
     .from("garages")
-    .select("id, name, slug, address")
+    .select("id, name, slug, address, trial_end_date, is_active")
     .eq("id", garageId)
     .maybeSingle();
 
@@ -45,6 +47,8 @@ export async function getCurrentGarage(): Promise<CurrentGarage | null> {
     name: garage.name ?? null,
     slug: (garage as { slug?: string | null }).slug ?? null,
     address: garage.address ?? null,
+    trial_end_date: (garage as { trial_end_date?: string | null }).trial_end_date ?? null,
+    is_active: (garage as { is_active?: boolean }).is_active ?? false,
   };
 }
 
@@ -76,7 +80,7 @@ export async function getCurrentGarageWithSettings(): Promise<GarageWithSettings
   const supabase = await createClient();
   const { data: garage } = await supabase
     .from("garages")
-    .select("id, name, slug, address")
+    .select("id, name, slug, address, trial_end_date, is_active")
     .eq("id", garageId)
     .maybeSingle();
 
@@ -94,6 +98,8 @@ export async function getCurrentGarageWithSettings(): Promise<GarageWithSettings
       name: garage.name ?? null,
       slug: (garage as { slug?: string | null }).slug ?? null,
       address: garage.address ?? null,
+      trial_end_date: (garage as { trial_end_date?: string | null }).trial_end_date ?? null,
+      is_active: (garage as { is_active?: boolean }).is_active ?? false,
     },
     settings: settings as GarageSettings | null,
   };

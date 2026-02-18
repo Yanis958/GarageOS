@@ -146,9 +146,8 @@ export default function LoginPage() {
       else setError(signInError.message);
       return;
     }
-    await new Promise((r) => setTimeout(r, 100));
-    router.push("/dashboard");
-    router.refresh();
+    // Redirection vers le dashboard (le layout gérera la vérification du trial)
+    window.location.href = "/dashboard";
   }
 
   async function handleResetPassword(e: React.MouseEvent) {

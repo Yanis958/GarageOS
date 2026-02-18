@@ -62,6 +62,8 @@ export type Garage = {
   name: string | null;
   slug: string | null;
   address: string | null;
+  trial_end_date: string | null;
+  is_active: boolean;
 };
 
 /** Garage + settings pour le contexte (settings peut être null si pas encore créée) */

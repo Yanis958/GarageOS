@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TrialBadge } from "./TrialBadge";
 
 type ToProcess = Awaited<ReturnType<typeof getQuotesToProcessToday>>;
 
@@ -196,6 +197,9 @@ export function Topbar() {
 
       {/* Actions à droite */}
       <div className="flex items-center gap-3">
+        {/* Badge Trial */}
+        <TrialBadge />
+        
         {/* Bouton Nouveau devis */}
         <Button asChild className="rounded-button bg-primary text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200">
           <Link href="/dashboard/devis/new" className="inline-flex items-center gap-2">
