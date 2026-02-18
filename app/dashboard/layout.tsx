@@ -26,17 +26,20 @@ export default async function DashboardLayout({
   const admin = await isAdmin();
   
   const garageWithSettings = await getCurrentGarageWithSettings();
-  if (!garageWithSettings) {
+  // Les admins peuvent accéder au dashboard même sans garage (pour gérer la plateforme)
+  // Les utilisateurs non-admin sans garage sont redirigés vers /onboarding
+  if (!garageWithSettings && !admin) {
     redirect("/onboarding");
   }
 
-  // Vérifier si le trial est expiré UNIQUEMENT pour les utilisateurs non-admin
+  // Vérifier si le trial est expiré UNIQUEMENT pour les utilisateurs non-admin avec garage
   // Ne rediriger vers /trial-expire QUE si :
   // 1. L'utilisateur n'est PAS admin
-  // 2. ET le garage n'est pas actif (is_active = false)
-  // 3. ET il a une date de fin de trial définie (non NULL)
-  // 4. ET cette date est dans le passé (trial expiré)
-  if (!admin) {
+  // 2. ET il a un garage
+  // 3. ET le garage n'est pas actif (is_active = false)
+  // 4. ET il a une date de fin de trial définie (non NULL)
+  // 5. ET cette date est dans le passé (trial expiré)
+  if (!admin && garageWithSettings) {
     const garage = garageWithSettings.garage;
     if (!garage.is_active && garage.trial_end_date) {
       try {
@@ -59,9 +62,8 @@ export default async function DashboardLayout({
       }
     }
   }
-  
-  // Si is_active = false mais pas de trial_end_date, permettre l'accès
-  // (cas des garages existants avant l'implémentation du système de trial)
+
+  const garageName = garageWithSettings?.garage?.name?.trim() || null;
 
   return (
     <DashboardHydrationShell>
@@ -73,7 +75,7 @@ export default async function DashboardLayout({
               <Topbar />
               <main className="flex-1 overflow-y-auto p-6">{children}</main>
             </div>
-            <CopilotWidget garageName={garageWithSettings.garage.name?.trim() || null} />
+            {garageName && <CopilotWidget garageName={garageName} />}
           </div>
         </GarageThemeProvider>
       </GarageProvider>
