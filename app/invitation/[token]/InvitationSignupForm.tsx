@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
-type CreateGarageResult = { error?: string } | void;
+type CreateGarageResult = { error?: string } | null;
 
 export function InvitationSignupForm({
   invitationToken,
@@ -19,10 +19,10 @@ export function InvitationSignupForm({
   garageName: string;
 }) {
   const [state, formAction] = useFormState(
-    async (_prev: CreateGarageResult, formData: FormData) => {
+    async (_prev: CreateGarageResult | null, formData: FormData): Promise<CreateGarageResult> => {
       return await createGarageFromInvitation(invitationToken, formData);
     },
-    null as CreateGarageResult | null
+    null
   );
 
   return (
