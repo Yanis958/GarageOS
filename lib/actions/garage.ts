@@ -86,11 +86,32 @@ export async function getCurrentGarageWithSettings(): Promise<GarageWithSettings
 
   if (!garage) return null;
 
-  const { data: settings } = await supabase
+  let { data: settings } = await supabase
     .from("garage_settings")
     .select("*")
     .eq("garage_id", garageId)
     .maybeSingle();
+
+  // Si les settings n'existent pas, les créer avec des valeurs par défaut
+  if (!settings) {
+    const { data: newSettings, error: insertError } = await supabase
+      .from("garage_settings")
+      .insert({
+        garage_id: garageId,
+        vat_rate: 20,
+        hourly_rate: 60,
+        currency: "EUR",
+        quote_valid_days: 30,
+        include_client_explanation_in_email: true,
+        reminders_enabled: true,
+      })
+      .select()
+      .single();
+    
+    if (!insertError && newSettings) {
+      settings = newSettings;
+    }
+  }
 
   return {
     garage: {
@@ -220,6 +241,9 @@ export async function updateGarageSettingsAction(
 
   if (Object.keys(updateData).length === 0) return {};
 
+  console.log("updateGarageSettingsAction: Mise à jour pour garageId:", garageId);
+  console.log("updateGarageSettingsAction: Données à mettre à jour:", updateData);
+
   const { data: existing } = await supabase
     .from("garage_settings")
     .select("garage_id")
@@ -227,19 +251,42 @@ export async function updateGarageSettingsAction(
     .maybeSingle();
 
   if (existing) {
-    const { error } = await supabase
+    console.log("updateGarageSettingsAction: UPDATE des settings existantes");
+    const { data: updatedData, error: updateError } = await supabase
       .from("garage_settings")
       .update(updateData)
-      .eq("garage_id", garageId);
-    if (error) return { error: error.message };
+      .eq("garage_id", garageId)
+      .select()
+      .single();
+    if (updateError) {
+      console.error("updateGarageSettingsAction: Erreur UPDATE:", updateError);
+      return { error: updateError.message };
+    }
+    console.log("updateGarageSettingsAction: UPDATE réussi:", updatedData);
+    return {};
   } else {
-    const { error } = await supabase.from("garage_settings").insert({
-      garage_id: garageId,
-      ...updateData,
-    });
-    if (error) return { error: error.message };
+    console.log("updateGarageSettingsAction: INSERT de nouvelles settings");
+    const { data: insertedData, error: insertError } = await supabase
+      .from("garage_settings")
+      .insert({
+        garage_id: garageId,
+        vat_rate: 20,
+        hourly_rate: 60,
+        currency: "EUR",
+        quote_valid_days: 30,
+        include_client_explanation_in_email: true,
+        reminders_enabled: true,
+        ...updateData,
+      })
+      .select()
+      .single();
+    if (insertError) {
+      console.error("updateGarageSettingsAction: Erreur INSERT:", insertError);
+      return { error: insertError.message };
+    }
+    console.log("updateGarageSettingsAction: INSERT réussi:", insertedData);
+    return {};
   }
-  return {};
 }
 
 export async function updateGarageAction(garageId: string, payload: { name?: string | null; address?: string | null }): Promise<{ error?: string }> {

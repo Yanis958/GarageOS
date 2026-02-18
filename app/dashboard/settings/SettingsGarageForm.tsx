@@ -41,23 +41,6 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
   const [removingLogo, setRemovingLogo] = useState(false);
   const [previewingPdf, setPreviewingPdf] = useState(false);
 
-  if (!garage) {
-    return (
-      <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-foreground">
-            <Building2 className="h-5 w-5" />
-            Garage
-          </CardTitle>
-          <CardDescription>Nom et informations du garage</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">Aucun garage configuré. Créez un garage dans Supabase (table garages).</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   async function handleSaveIdentity(e: React.FormEvent) {
     e.preventDefault();
     if (!garage) return;
@@ -74,7 +57,15 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
     else if (err2.error) toast.error(err2.error);
     else {
       toast.success("Identité enregistrée.");
-      router.refresh();
+      try {
+        await fetch('/api/revalidate?path=/dashboard', { method: 'POST' });
+        await fetch('/api/revalidate?path=/dashboard/settings', { method: 'POST' });
+      } catch (e) {
+        console.error("Erreur revalidation:", e);
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     }
   }
 
@@ -92,7 +83,15 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
     if (err.error) toast.error(err.error);
     else {
       toast.success("Devis & facturation enregistrés.");
-      router.refresh();
+      try {
+        await fetch('/api/revalidate?path=/dashboard', { method: 'POST' });
+        await fetch('/api/revalidate?path=/dashboard/settings', { method: 'POST' });
+      } catch (e) {
+        console.error("Erreur revalidation:", e);
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     }
   }
 
@@ -111,7 +110,15 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
     if (err.error) toast.error(err.error);
     else {
       toast.success("Documents enregistrés.");
-      router.refresh();
+      try {
+        await fetch('/api/revalidate?path=/dashboard', { method: 'POST' });
+        await fetch('/api/revalidate?path=/dashboard/settings', { method: 'POST' });
+      } catch (e) {
+        console.error("Erreur revalidation:", e);
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     }
   }
 
@@ -382,7 +389,15 @@ export function SettingsGarageForm({ garageWithSettings }: { garageWithSettings:
               if (err.error) toast.error(err.error);
               else {
                 toast.success("Préférence enregistrée.");
-                router.refresh();
+                try {
+                  await fetch('/api/revalidate?path=/dashboard', { method: 'POST' });
+                  await fetch('/api/revalidate?path=/dashboard/settings', { method: 'POST' });
+                } catch (e) {
+                  console.error("Erreur revalidation:", e);
+                }
+                setTimeout(() => {
+                  window.location.reload();
+                }, 300);
               }
             }}
             className="flex flex-wrap items-center gap-4"
