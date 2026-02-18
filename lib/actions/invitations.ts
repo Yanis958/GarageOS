@@ -154,7 +154,11 @@ export async function createGarageFromInvitation(
 
   if (insertGarageError || !newGarage?.id) {
     // Nettoyer le compte utilisateur créé en cas d'erreur
-    await supabase.auth.admin.deleteUser(userId).catch(() => {});
+    try {
+      await supabase.auth.admin.deleteUser(userId);
+    } catch {
+      // Ignorer les erreurs de nettoyage
+    }
     return { error: insertGarageError?.message ?? "Erreur lors de la création du garage." };
   }
 
@@ -169,8 +173,16 @@ export async function createGarageFromInvitation(
 
   if (memberError) {
     // Nettoyer en cas d'erreur
-    await supabase.from("garages").delete().eq("id", garageId).catch(() => {});
-    await supabase.auth.admin.deleteUser(userId).catch(() => {});
+    try {
+      await supabase.from("garages").delete().eq("id", garageId);
+    } catch {
+      // Ignorer les erreurs de nettoyage
+    }
+    try {
+      await supabase.auth.admin.deleteUser(userId);
+    } catch {
+      // Ignorer les erreurs de nettoyage
+    }
     return { error: memberError.message };
   }
 
