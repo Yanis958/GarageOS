@@ -12,9 +12,15 @@ export function TrialBadge() {
       return;
     }
 
+    // Type guard : TypeScript sait maintenant que trial_end_date n'est pas null
+    const trialEndDate = garage.trial_end_date;
+    if (!trialEndDate) {
+      return;
+    }
+
     const calculateDaysRemaining = () => {
       const now = new Date();
-      const trialEnd = new Date(garage.trial_end_date);
+      const trialEnd = new Date(trialEndDate);
       const diffTime = trialEnd.getTime() - now.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       setDaysRemaining(Math.max(0, diffDays));
